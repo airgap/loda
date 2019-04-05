@@ -47,7 +47,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
   //Automatically set by retreiving value from the Loda script tag.
   //Required for RML, and requires Loda account.
   //Not required for any other features.
-  Loda.TACHYON_ID;
+  Loda.LODA_ID;
 
   Loda.siteVersion;
 
@@ -242,14 +242,14 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     var ti;
     if (ts) {
       ti = ts.getAttribute("loda-id");
-      Loda.TACHYON_ID = ti;
+      Loda.LODA_ID = ti;
       if(Loda.isDebugging())console.log("[Loda] Site version: " + Loda.getSiteVersion());
 
       var serv = ts.getAttribute('loda-proxy');
       Loda.SERVER = serv || "https://api.loda.rocks";
       Loda.USING_PROXY = serv;
     }
-    if (typeof Loda.TACHYON_ID == "string" || Loda.USING_PROXY) {
+    if (typeof Loda.LODA_ID == "string" || Loda.USING_PROXY) {
       if (Loda.loadedFor.indexOf(location.href) < 0) {
         Loda.pollServer(location.href, null);
         Loda.loadedFor.push(location.href);
@@ -298,7 +298,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     var data = {
       action: "loading_page",
       current_page: a.href,
-      api_key: Loda.TACHYON_ID
+      api_key: Loda.LODA_ID
     };
     if (f) {
       a.href = f;
@@ -331,7 +331,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     }
     var last_page = Loda.LAST_PAGE;
     Loda.loadPage(d);
-    if (typeof Loda.TACHYON_ID == "string") Loda.pollServer(d, last_page);
+    if (typeof Loda.LODA_ID == "string") Loda.pollServer(d, last_page);
   };
 
   //Retreives a page for preloading.
