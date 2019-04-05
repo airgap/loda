@@ -39,8 +39,11 @@ We do have a Wordpress plugin for Loda but it frequently lags several versions b
 1. In your site settings, install the "Header Footer Code Manager" plugin
 2. In the plugin settings, click "Add New"
 3. Configure the snippet however you need
-4. Paste `<script src="https://loda.rocks/libraries/0.6/loda.min.js"></script>` into the "Snippet / Code" box
-5. Click "Save"
+4. Paste `<script src="https://loda.rocks/libraries/0.6/loda.min.js"></script>` into the "Snippet / Code" box and click "Save"
+
+## Ghost
+1. Go to the Code Injection panel in your Ghost site settings
+2. Paste `<script src="https://loda.rocks/libraries/0.6/loda.min.js"></script>` into the Blog Header editor and click "Save"
 
 ## Other
 
