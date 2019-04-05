@@ -29,22 +29,22 @@ Copy and Paste implementation Loda may be a complex piece of digital equipment, 
 Possibly the zaniest feature Loda provides is the ability to trigger hover events before the cursor actually mouses over an element. Using the same movement-prediction algorithm powering the click anticipation and autocaching, Loda tracks cursor movement and accurately predicts when an element is about to be hovered over, adding the .prehover class and triggering the prehover event before the cursor even touches the element.
 
 ## So Crazy It Works
-We're proud to say Loda is probably the craziest JavaScript library ever invented. We load pages before they're needed, trigger events before they occur, and pack Rapid Machine Learning into a single <script> reference. No, this isn't some April Fools joke, this is the real deal. Sometimes crazy is a good thing.
+We're proud to say Loda is probably the craziest JavaScript library ever invented. We load pages before they're needed, trigger events before they occur, and pack Rapid Machine Learning into a single `<script>` reference. No, this isn't some April Fools joke, this is the real deal. Sometimes crazy is a good thing.
 
 # Setup
 
 ## Wordpress
 We do have a Wordpress plugin for Loda but it frequently lags several versions behind so until we update it we recommend using the following setup method:
 
-1. Install the "Header Footer Code Manager" plugin
+1. In your site settings, install the "Header Footer Code Manager" plugin
 2. In the plugin settings, click "Add New"
 3. Configure the snippet however you need
-4. Paste `<script src="https://loda.rocks/libraries/0.6/loda.min.js"></script>` (CDN for the the contents of [loda.min.js](https://github.com/airgap/loda/blob/master/loda.min.js)) into the "Snippet / Code" box
+4. Paste `<script src="https://loda.rocks/libraries/0.6/loda.min.js"></script>` into the "Snippet / Code" box
 5. Click "Save"
 
 ## Other
 
-2. Add `<script src="https://loda.rocks/libraries/0.6/loda.min.js"></script>` somewhere in your `<head>`
-3. You're done.
-4. Seriously.
-5. Everything's automatic.
+1. Add `<script src="https://loda.rocks/libraries/0.6/loda.min.js"></script>` somewhere in your `<head>`
+2. You're done.
+3. Seriously.
+4. Everything's automatic.
