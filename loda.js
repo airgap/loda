@@ -324,8 +324,13 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     var d;
     if (typeof e == `string`) d = e;
     else {
+    var d = e.target;
+      if(e.button) {
+        if(e.button==2)
+          d.href = d.getAttribute('loda-href');
+        return;
+      }
       makeDeferredPageLoadSpooler();
-      var d = e.target;
       while (d && !d.getAttribute("loda-href")) d = d.parentNode;
       d = d.getAttribute("loda-href");
     }
