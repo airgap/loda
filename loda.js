@@ -172,7 +172,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
 
     //Manually trigger load events
     if(Loda.loaded) {
-      document.dispatchEvent(new CustomEvent('page-loaded'))
+      document.dispatchEvent(new CustomEvent('page-loaded'));
       [document, window].forEach(d=>{
         d.dispatchEvent(
           new UIEvent(
