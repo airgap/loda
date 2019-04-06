@@ -369,7 +369,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
         Loda.queuedPage = page;
         document.dispatchEvent(
           new CustomEvent(
-            "queued-page",
+            "page-queued",
             {
               bubbles: true,
               cancelable: true,
