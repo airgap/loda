@@ -1,5 +1,5 @@
 // FTL.js from ftl.rocks
-(k=>{var f,j=P={x:0,y:0},M=e=>{var c={x:e.clientX,y:e.clientY};j=c;u()},G=Math,H=G.pow,l=v=>{return G.min(200,G.max(-200,v))},O=document,V=(a,b,c)=>{a.dispatchEvent(new CustomEvent(b,c))},F='parentNode',u=k=>{var q=j,D={x:l((q.x-P.x)*8),y:l((q.y-P.y)*8)},C={x:q.x+D.x,y:q.y+D.y,d:H(H(D.x,2)+H(D.y,2),.5)};V(O,"precursormove",{detail:{x:C.x,y:C.y,d:C.d}});E(C);P=j},E=s=>{var l=O.elementFromPoint(s.x,s.y),B=A=[],n=f,r='classList',v='prehover';if(f&&(!l||l!=f)){f[r].remove(v);V(f,"erphover")}if(l&&f!=l){while(n)B.push(n=n[F]);n=l;while(n)A.push(n=n[F]);for(n of B){if(n&&A.indexOf(n)<0){n[r].remove(v)}}for(n of A){if(n&&B.indexOf(n)<0){n[r].add(v)}}l[r].add(v);V(l,v,{detail:{d:s.d}});f=l}};O.addEventListener("mousemove",M)})()
+(k=>{var f,j=P={'x':0,'y':0},M=e=>{var c={'x':e.clientX,'y':e.clientY};j=c;u()},G=Math,H=G.pow,l=v=>{return G.min(200,G.max(-200,v))},O=document,V=(a,b,c)=>{a.dispatchEvent(new CustomEvent(b,{'detail':c}))},F='parentNode',u=k=>{var q=j,D={'x':l((q.x-P.x)*8),'y':l((q.y-P.y)*8)},C={'x':q.x+D.x,'y':q.y+D.y,'d':H(H(D.x,2)+H(D.y,2),.5)};V(O,"precursormove",{'x':C.x,'y':C.y,'d':C.d});E(C);P=j},E=s=>{var l=O.elementFromPoint(s.x,s.y),B=A=[],n=f,r='classList',v='prehover';if(f&&(!l||l!=f)){f[r].remove(v);V(f,"erphover")}if(l&&f!=l){while(n)B.push(n=n[F]);n=l;while(n)A.push(n=n[F]);for(n of B){if(n&&A.indexOf(n)<0){n[r].remove(v)}}for(n of A){if(n&&B.indexOf(n)<0){n[r].add(v)}}l[r].add(v);V(l,v,{'d':s.d});f=l}};O.addEventListener("mousemove",M)})()
 
 
 //Global variables
@@ -8,12 +8,9 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
   console.log("[Loda] Loda disabled by URL.");
 } else if (typeof Loda == "undefined") {
 
-
+  var V=(a,b)=>{document.dispatchEvent(new CustomEvent(a,{'detail':b}))}
   L = {};
     window.addEventListener("popstate", L.popPage);
-
-  L.VERSION = 0.50;
-  L.VERSION_STRING = "0.5";
 
   L.tryingToBinder;
 
@@ -22,7 +19,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
 
   //Cursor position log. Used for predicting cursor movement.
   L.positions = [];
-  L.lastPos = {x: 0, y: 0}
+  L.lastPos = {'x': 0,'y': 0}
 
   //Used for extra-console logging. Automatically set with the log(string) function
   L.logbox;
@@ -78,77 +75,26 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     }
     return elem;
   };
-  L.bind = (node, trigger, func) => {
-    L.enumerateOver(L.expandSpaces(node), n => {
-      L.enumerateOver(L.expandSpaces(trigger), t => {
-        L.enumerateOver(func, f => {
-          var node = L.grab(n);
-          if(node) {
-            if(t) {
-              if(f) {
-                node
-                .addEventListener(t, f);
-              }
-              else console.log('Trying to bind a nonexistent function to a node')
-            }
-            else console.log('Trying to bind a function to a node with an invalid trigger')
-          }
-          else console.log('Trying to bind a function to nonexistant node')
-        });
-      });
-    });
+  L['bind'] = (node, trigger, func) => {
+    node.addEventListener(trigger, func)
   };
-  L.load = func => {
-    L.enumerateOver(func, x => {
-      L.bind(window, "load", x);
-    });
+  L['load'] = func => {
+      L['bind'](window, "load", func);
   };
 
-  L.doad = func => {
-    L.enumerateOver(func, x => {
-      L.bind(window, "DOMContentLoaded", x);
-    });
+  L['doad'] = func => {
+      L['bind'](window, "DOMContentLoaded", func);
   };
 
-  L.dfload = func => {
-    L.enumerateOver(func, x => {
-      L.bind(window, "load", ()=>{
-        setTimeout(x,0);
+  L['dfload'] = func => {
+      L['bind'](window, "load", ()=>{
+        setTimeout(func,0);
       })
-    });
   };
 
   L.enumerateOver = (array, func) => {
-    if (Array.isArray(array)) for (var n of Array.from(array)) func(n);
+    if (Array.isArray(array)) for (var n of array) func(n);
     else func(array);
-  };
-
-  L.expandSpaces = array => {
-    return typeof array == "string" ? array.split(" ") : array;
-  };
-
-  L.addc = (elem, clas) => {
-    L.enumerateOver(L.grab(elem), x => {
-      x.classList.add(clas);
-    });
-  };
-  L.remc = (elem, clas) => {
-    L.enumerateOver(L.grab(elem), x => {
-      x.classList.remove(clas);
-    });
-  };
-  L.setc = (elem, clas, val) => {
-    Loda[val?'addc':'remc'](elem, clas);
-  }
-  L.hasc = (elem, clas) => {
-    return L.grab(elem).classList.contains(clas);
-  };
-
-  L.togc = (elem, clas) => {
-    L.enumerateOver(L.grab(elem), x => {
-      if(L.hasc(x,clas))L.remc(x,clas);
-      else L.addc(x,clas);
-    });
   };
 
   //Runs on page load.
@@ -156,13 +102,11 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     if(typeof L.deferredPageLoadSpooler != 'undefined') {
       clearTimeout(L.deferredPageLoadSpooler);
     }
-    document.dispatchEvent(new CustomEvent(
+    V(
       'page-loading', {
-        detail: {
           cache: L.cache
-        }
       }
-    ));
+    );
     if (L.TryingToBinder) {
       clearTimeout(L.tryingToBinder);
     }
@@ -176,7 +120,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
 
     //Manually trigger load events
     if(L.loaded) {
-      document.dispatchEvent(new CustomEvent('page-loaded'));
+      V('page-loaded');
       [document, window].forEach(d=>{
         d.dispatchEvent(
           new UIEvent(
@@ -190,7 +134,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       if(Array.isArray(LODA_EXCLUSION_URLS)) {
         for(var u in LODA_EXCLUSION_URLS) {
           if(LODA_EXCLUSION_URLS[u] == location.href) {
-            document.dispatchEvent(new CustomEvent('page-excluded', {detail:{page:location.href}}))
+            V('page-excluded', {'page':location.href})
             loda_blocked = true;
             break;
           }
@@ -251,14 +195,8 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
         L.loadedFor.push(location.href);
       }
     }
-    document.dispatchEvent(
-      new CustomEvent(
-        "page-prepped",
-        {
-          bubbles: true,
-          cancelable: true,
-        }
-      )
+    V(
+        "page-prepped"
     );
     L.loaded = true;
   };
@@ -271,11 +209,11 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       var res = JSON.parse(x.response);
       var urls = res.pages;
       if (urls) {
-        for (url of Array.from(urls)) {
+        for (url of urls) {
           L.cachePage(url);
         }
       } else {
-        document.dispatchEvent('api-error', { detail: { error: res.err } })
+        V('api-error', {'error': res.err })
       }
     });
     var a = document.createElement("a");
@@ -375,18 +313,12 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
   L.cachePage = (page, show, pop) => {
     if(show) {
         L.queuedPage = page;
-        document.dispatchEvent(
-          new CustomEvent(
-            "page-queued",
+        V(
+          "page-queued",
             {
-              bubbles: true,
-              cancelable: true,
-              detail: {
-                page: page
-                /* Will eventually include the link that was clicked */
-              }
+              page: page
+              /* Will eventually include the link that was clicked */
             }
-          )
         );
     }
     if (L.caching[page]) return;
@@ -398,35 +330,23 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       sp.version >= L.getSiteVersion()
     ) {
       L.cache[page] = sp.content;
-      document.dispatchEvent(
-        new CustomEvent(
-          "permacache-hit",
-          {
-            bubbles: true,
-            cancelable: true,
-            detail: {
-              page: page
-            }
-          }
-        )
+      V(
+        "permacache-hit",
+        {
+          page: page
+        }
       );
       if (L.queuedPage) L.showPage(page, pop);
     } else {
       var x = new XMLHttpRequest();
       x.addEventListener("load", () => {
         L.cache[page] = x.response;
-        document.dispatchEvent(
-          new CustomEvent(
-            "page-cached",
-            {
-              bubbles: true,
-              cancelable: true,
-              detail: {
-                page: page,
-                content: x.content
-              }
-            }
-          )
+        V(
+          "page-cached",
+          {
+            page: page,
+            content: x.content
+          }
         );
         L.cleanCache(x.response.length);
         if (L.getSiteVersion() > -1 && (L.cacheSize() + x.response.length < 4000000)) {
@@ -440,14 +360,8 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
               owner: "Loda"
             })
           );
-          document.dispatchEvent(
-            new CustomEvent(
-              "page-permacached",
-              {
-                bubbles: true,
-                cancelable: true
-              }
-            )
+          V(
+              "page-permacached"
           );
         }
         if (L.queuedPage) L.showPage(L.queuedPage, pop);
@@ -576,30 +490,18 @@ L.cleanCache = (extra) => {
     }
     if(earliestId) {
       localStorage.removeItem(earliestId);
-      document.dispatchEvent(
-        new CustomEvent(
-          "cache-trimmed",
-          {
-            bubbles: true,
-            cancelable: true,
-            detail: {
-              page: earliestId
-            }
-          }
-        )
+      V(
+        "cache-trimmed",
+        {
+          page: earliestId
+        }
       )
     }
 
   }
 
-  document.dispatchEvent(
-    new CustomEvent(
-      "cache-cleaned",
-      {
-        bubbles: true,
-        cancelable: true
-      }
-    )
+  V(
+    "cache-cleaned"
   );
 
 }
