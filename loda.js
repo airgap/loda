@@ -147,18 +147,18 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     });
   };
 
-  Loda.isDebugging = () => {
-    var sc = Loda.grab('loda-script');
-    return sc && sc.getAttribute('loda-debugging') == "true";
-  }
-
   //Runs on page load.
   Loda.loader = () => {
     if(typeof Loda.deferredPageLoadSpooler != 'undefined') {
       clearTimeout(Loda.deferredPageLoadSpooler);
     }
-    //This will do something once a Debug flag attribute is added
-    //console.log(Loda.cache);
+    document.dispatchEvent(new CustomEvent(
+      'page-loading', {
+        detail: {
+          cache: Loda.cache
+        }
+      }
+    ));
     if (Loda.TryingToBinder) {
       clearTimeout(Loda.tryingToBinder);
     }
@@ -172,14 +172,13 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
 
     //Manually trigger load events
     if(Loda.loaded) {
-      if(Loda.isDebugging())console.log("[Loda] Page loaded");
+      document.dispatchEvent(new CustomEvent('page-loaded'))
       [document, window].forEach(d=>{
         d.dispatchEvent(
           new UIEvent(
             "load"
           )
         );
-        //console.log(d)
       })
     }
     var loda_blocked = false;
@@ -187,7 +186,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       if(Array.isArray(LODA_EXCLUSION_URLS)) {
         for(var u in LODA_EXCLUSION_URLS) {
           if(LODA_EXCLUSION_URLS[u] == location.href) {
-            console.log("Loda excluded from this page.");
+            document.dispatchEvent(new CustomEvent('page-excluded', {detail:{page:location.href}}))
             loda_blocked = true;
             break;
           }
@@ -227,23 +226,12 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       }
     }
 
-    //Weebly compatibility
-
-    /*var weeblyNavToggles = document.getElementsByClassName('w-navpane-trigger');
-    for(var w = 0; w < weeblyNavToggles.length; w ++)
-      var weeb = weeblyNavToggles[w];
-      Loda.bind(weeb, 'click', ()=>{
-        Loda.togc(weeb, 'w-navpane-trigger-active');
-        Loda.togc(document.body, 'w-navpane-is-open');
-      })*/
-
     document.body.addEventListener("mousemove", Loda.moved);
     var ts = Loda.grab("loda-script");
     var ti;
     if (ts) {
       ti = ts.getAttribute("loda-id");
       Loda.LODA_ID = ti;
-      if(Loda.isDebugging())console.log("[Loda] Site version: " + Loda.getSiteVersion());
 
       var serv = ts.getAttribute('loda-proxy');
       Loda.SERVER = serv || "https://api.loda.rocks";
@@ -254,18 +242,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
         Loda.pollServer(location.href, null);
         Loda.loadedFor.push(location.href);
       }
-    } else {
-      if(Loda.isDebugging())console.log(
-        "[Loda] No Loda ID present. This is A-OK unless you need RML."
-      );
     }
-    var pages = localStorage;
-    var keys = Object.keys(pages);
-    //console.log("AYY")
-    if(Loda.isDebugging()) {
-      for(var i = 0, len = localStorage.length; i < len; ++ i)console.log(localStorage.key(i))
-    }
-    if(Loda.isDebugging())console.log("[Loda] Page prepped");
     document.dispatchEvent(
       new CustomEvent(
         "page-prepped",
@@ -290,7 +267,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
           Loda.cachePage(url);
         }
       } else {
-        if(Loda.isDebugging())console.log(res.err.description);
+        document.dispatchEvent('api-error', { detail: { error: res.err } })
       }
     });
     var a = document.createElement("a");
@@ -390,7 +367,6 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
   Loda.cachePage = (page, show, pop) => {
     if(show) {
         Loda.queuedPage = page;
-        if(Loda.isDebugging()) console.log("[Loda] Queued page for display", page)
         document.dispatchEvent(
           new CustomEvent(
             "queued-page",
@@ -419,17 +395,18 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
           "permacache-hit",
           {
             bubbles: true,
-            cancelable: true
+            cancelable: true,
+            detail: {
+              page: page
+            }
           }
         )
       );
-      if(Loda.isDebugging())console.log("[Loda] Loaded page from permacache.    " + page);
       if (Loda.queuedPage) Loda.showPage(page, pop);
     } else {
       var x = new XMLHttpRequest();
       x.addEventListener("load", () => {
         Loda.cache[page] = x.response;
-        if(Loda.isDebugging()) console.log("[Loda] Cached page", page)
         document.dispatchEvent(
           new CustomEvent(
             "page-cached",
@@ -455,10 +432,9 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
               owner: "Loda"
             })
           );
-          if(Loda.isDebugging())console.log("[Loda] Saved page to permacache.");
           document.dispatchEvent(
             new CustomEvent(
-              "page-permacached", //The foreseen hover ain't coming through
+              "page-permacached",
               {
                 bubbles: true,
                 cancelable: true
@@ -466,8 +442,6 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
             )
           );
         }
-        //console.log(Loda.queuedPage);
-        if(Loda.isDebugging())console.log("[Loda] Saved page to permacache.");
         if (Loda.queuedPage) Loda.showPage(Loda.queuedPage, pop);
       });
       x.open("GET", page);
@@ -675,14 +649,25 @@ Loda.cleanCache = (extra) => {
     }
     if(earliestId) {
       localStorage.removeItem(earliestId);
-      if(Loda.isDebugging())console.log("[Loda] Removed oldest page from cache.", earliestId)
+      document.dispatchEvent(
+        new CustomEvent(
+          "cache-trimmed",
+          {
+            bubbles: true,
+            cancelable: true,
+            detail: {
+              page: earliestId
+            }
+          }
+        )
+      )
     }
 
   }
 
   document.dispatchEvent(
     new CustomEvent(
-      "cache-cleaned", //The foreseen hover ain't coming through
+      "cache-cleaned",
       {
         bubbles: true,
         cancelable: true
