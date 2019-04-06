@@ -1,3 +1,7 @@
+// FTL.js from ftl.rocks
+(k=>{var m=Array.from,f,j=P={x:0,y:0},M=e=>{var c={x:e.clientX,y:e.clientY};j=c;u()},G=Math,H=G.pow,l=v=>{return G.min(200,G.max(-200,v))},O=document,V=CustomEvent,Y='dispatchEvent',F='parentNode',u=k=>{var q=j,d={x:q.x-P.x,y:q.y-P.y},D={x:l(d.x*8),y:l(d.y*8)},C={x:q.x+D.x,y:q.y+D.y,d:H(H(D.x,2)+H(D.y,2),.5)};O[Y](new V("precursormove",{detail:{x:C.x,y:C.y,d:C.d}}));E(C);P=j},E=s=>{var l=O.elementFromPoint(~~s.x,~~s.y),Q={bubbles:1,cancellable:1},B=A=[],n=f,r='classList',v='prehover',T=Q;if(f&&(!l||l!=f)){f[r].remove(v);f[Y](new V("erphover",Q))}if(l&&f!=l){while(n){B.push(n=n[F])}n=l;while(n){A.push(n=n[F])}for(n of m(B)){if(n&&A.indexOf(n)<0){n[r].remove(v)}}for(n of m(A)){if(n&&B.indexOf(n)<0){n[r].add(v)}}l[r].add(v);T.detail={'d':s.d};l[Y](new V(v,T));f=l}};O.addEventListener("mousemove",M)})()
+
+
 //Global variables
 
 if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
@@ -5,68 +9,68 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
 } else if (typeof Loda == "undefined") {
 
 
-  Loda = {};
-    window.addEventListener("popstate", Loda.popPage);
+  L = {};
+    window.addEventListener("popstate", L.popPage);
 
-  Loda.VERSION = 0.50;
-  Loda.VERSION_STRING = "0.5";
+  L.VERSION = 0.50;
+  L.VERSION_STRING = "0.5";
 
-  Loda.tryingToBinder;
+  L.tryingToBinder;
 
   //Loaded first time
-  Loda.loaded = false;
+  L.loaded = false;
 
   //Cursor position log. Used for predicting cursor movement.
-  Loda.positions = [];
-  Loda.lastPos = {x: 0, y: 0}
+  L.positions = [];
+  L.lastPos = {x: 0, y: 0}
 
   //Used for extra-console logging. Automatically set with the log(string) function
-  Loda.logbox;
+  L.logbox;
 
   //Used for debugging. Stores current frame. Increased each time the mouse moves.
-  Loda.frame = 0;
+  L.frame = 0;
 
   //Current cursor position.
-  Loda.cpos = {
+  L.cpos = {
     x: 0,
     y: 0
   };
 
   //Cache of downloaded pages.
-  Loda.cache = {};
+  L.cache = {};
 
   //Pages that are currently being cached.
-  Loda.caching = {};
+  L.caching = {};
 
   //Pages that already have the RML-generated list of pages to cache retreived.
-  Loda.loadedFor = [];
+  L.loadedFor = [];
 
   //Used for time-delay hover caching. Currently unused.
-  Loda.cacheTimer;
+  L.cacheTimer;
 
   //Automatically set by retreiving value from the Loda script tag.
   //Required for RML, and requires Loda account.
   //Not required for any other features.
-  Loda.LODA_ID;
+  L.LODA_ID;
 
-  Loda.siteVersion;
+  L.siteVersion;
 
   //Keeps track of what page was just navigated away from.
-  Loda.LAST_PAGE;
+  L.LAST_PAGE;
 
   //Keeps track of hash changes to ignore popState
-  Loda.ignoreNav;
+  L.ignoreNav;
 
   //Stores the page that will be shown after load if link is clicked.
-  Loda.queuedPage;
+  L.queuedPage;
 
   //Override this to pass API calls through a custom proxy to protect your
   //API key and to allow you to filter requests to prevent DoS and other abuse
-  Loda.SERVER = "https://api.loda.rocks";
-  Loda.USING_PROXY = false;
+  L.SERVER = "https://api.loda.rocks";
+  L.USING_PROXY = false;
 
   //Helper functions. Soon to be replaced.
-  Loda.grab = elem => {
+  L.grab = elem => {
     if (typeof elem === "string") {
       var o = [];
       elem.split("|").forEach(x => o.push(document.getElementById(x)));
@@ -74,11 +78,11 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     }
     return elem;
   };
-  Loda.bind = (node, trigger, func) => {
-    Loda.enumerateOver(Loda.expandSpaces(node), n => {
-      Loda.enumerateOver(Loda.expandSpaces(trigger), t => {
-        Loda.enumerateOver(func, f => {
-          var node = Loda.grab(n);
+  L.bind = (node, trigger, func) => {
+    L.enumerateOver(L.expandSpaces(node), n => {
+      L.enumerateOver(L.expandSpaces(trigger), t => {
+        L.enumerateOver(func, f => {
+          var node = L.grab(n);
           if(node) {
             if(t) {
               if(f) {
@@ -94,84 +98,84 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       });
     });
   };
-  Loda.load = func => {
-    Loda.enumerateOver(func, x => {
-      Loda.bind(window, "load", x);
+  L.load = func => {
+    L.enumerateOver(func, x => {
+      L.bind(window, "load", x);
     });
   };
 
-  Loda.doad = func => {
-    Loda.enumerateOver(func, x => {
-      Loda.bind(window, "DOMContentLoaded", x);
+  L.doad = func => {
+    L.enumerateOver(func, x => {
+      L.bind(window, "DOMContentLoaded", x);
     });
   };
 
-  Loda.dfload = func => {
-    Loda.enumerateOver(func, x => {
-      Loda.bind(window, "load", ()=>{
+  L.dfload = func => {
+    L.enumerateOver(func, x => {
+      L.bind(window, "load", ()=>{
         setTimeout(x,0);
       })
     });
   };
 
-  Loda.enumerateOver = (array, func) => {
+  L.enumerateOver = (array, func) => {
     if (Array.isArray(array)) for (var n of Array.from(array)) func(n);
     else func(array);
   };
 
-  Loda.expandSpaces = array => {
+  L.expandSpaces = array => {
     return typeof array == "string" ? array.split(" ") : array;
   };
 
-  Loda.addc = (elem, clas) => {
-    Loda.enumerateOver(Loda.grab(elem), x => {
+  L.addc = (elem, clas) => {
+    L.enumerateOver(L.grab(elem), x => {
       x.classList.add(clas);
     });
   };
-  Loda.remc = (elem, clas) => {
-    Loda.enumerateOver(Loda.grab(elem), x => {
+  L.remc = (elem, clas) => {
+    L.enumerateOver(L.grab(elem), x => {
       x.classList.remove(clas);
     });
   };
-  Loda.setc = (elem, clas, val) => {
+  L.setc = (elem, clas, val) => {
     Loda[val?'addc':'remc'](elem, clas);
   }
-  Loda.hasc = (elem, clas) => {
-    return Loda.grab(elem).classList.contains(clas);
+  L.hasc = (elem, clas) => {
+    return L.grab(elem).classList.contains(clas);
   };
 
-  Loda.togc = (elem, clas) => {
-    Loda.enumerateOver(Loda.grab(elem), x => {
-      if(Loda.hasc(x,clas))Loda.remc(x,clas);
-      else Loda.addc(x,clas);
+  L.togc = (elem, clas) => {
+    L.enumerateOver(L.grab(elem), x => {
+      if(L.hasc(x,clas))L.remc(x,clas);
+      else L.addc(x,clas);
     });
   };
 
   //Runs on page load.
-  Loda.loader = () => {
-    if(typeof Loda.deferredPageLoadSpooler != 'undefined') {
-      clearTimeout(Loda.deferredPageLoadSpooler);
+  L.loader = () => {
+    if(typeof L.deferredPageLoadSpooler != 'undefined') {
+      clearTimeout(L.deferredPageLoadSpooler);
     }
     document.dispatchEvent(new CustomEvent(
       'page-loading', {
         detail: {
-          cache: Loda.cache
+          cache: L.cache
         }
       }
     ));
-    if (Loda.TryingToBinder) {
-      clearTimeout(Loda.tryingToBinder);
+    if (L.TryingToBinder) {
+      clearTimeout(L.tryingToBinder);
     }
-    Loda.tryingToBinder = setTimeout(Loda.actualLoader, 10);
+    L.tryingToBinder = setTimeout(L.actualLoader, 10);
   };
-  Loda.actualLoader = () => {
+  L.actualLoader = () => {
     if (!document.body) {
-      Loda.loader();
+      L.loader();
       return;
     }
 
     //Manually trigger load events
-    if(Loda.loaded) {
+    if(L.loaded) {
       document.dispatchEvent(new CustomEvent('page-loaded'));
       [document, window].forEach(d=>{
         d.dispatchEvent(
@@ -194,7 +198,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       }
     }
 
-    Loda.LAST_PAGE = location.href;
+    L.LAST_PAGE = location.href;
     if(!loda_blocked) {
       var links = document.getElementsByTagName("a");
       var a = document.createElement("a");
@@ -213,34 +217,38 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
           ((location.href.match(/^(.+?):\/\//)||[0])[1] == (lh.match(/^(.+?):\/\//)||[0])[1]) &&
           links[i].href.match(new RegExp("^https?://"+srcDomain+"([:/#]|$)"))) {
           if(lh.substring(0,destHashPos) != location.href.substring(0,srcHashPos)) { //Different page
-            links[i].addEventListener("mouseover", Loda.startHover);
-            links[i].addEventListener("blur", Loda.endHover);
-            links[i].addEventListener("mousedown", Loda.clickLink);
+            //links[i].addEventListener("mouseover", L.startHover);
+            //links[i].addEventListener("blur", L.endHover);
+            links[i].addEventListener('prehover', e=>{
+              L.startHover({
+                target: links[i]
+              });
+            });
+            links[i].addEventListener("mousedown", L.clickLink);
             a.href = links[i].getAttribute("href");
             links[i].setAttribute("loda-href", a.href);
             links[i].setAttribute("href", "javascript:void(0);");
           } else { //Just a hash change...probably
-            links[i].addEventListener('click', Loda.ignoreNav);
+            links[i].addEventListener('click', L.ignoreNav);
           }
         }
       }
     }
 
-    document.body.addEventListener("mousemove", Loda.moved);
-    var ts = Loda.grab("loda-script");
+    var ts = L.grab("loda-script");
     var ti;
     if (ts) {
       ti = ts.getAttribute("loda-id");
-      Loda.LODA_ID = ti;
+      L.LODA_ID = ti;
 
       var serv = ts.getAttribute('loda-proxy');
-      Loda.SERVER = serv || "https://api.loda.rocks";
-      Loda.USING_PROXY = serv;
+      L.SERVER = serv || "https://api.loda.rocks";
+      L.USING_PROXY = serv;
     }
-    if (typeof Loda.LODA_ID == "string" || Loda.USING_PROXY) {
-      if (Loda.loadedFor.indexOf(location.href) < 0) {
-        Loda.pollServer(location.href, null);
-        Loda.loadedFor.push(location.href);
+    if (typeof L.LODA_ID == "string" || L.USING_PROXY) {
+      if (L.loadedFor.indexOf(location.href) < 0) {
+        L.pollServer(location.href, null);
+        L.loadedFor.push(location.href);
       }
     }
     document.dispatchEvent(
@@ -252,19 +260,19 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
         }
       )
     );
-    Loda.loaded = true;
+    L.loaded = true;
   };
-  Loda.load(Loda.loader);
+  L.load(L.loader);
 
   //Retrieve RML data from server. Only called if Loda ID is provided.
-  Loda.pollServer = (e, f) => {
+  L.pollServer = (e, f) => {
     var x = new XMLHttpRequest();
     x.addEventListener("load", () => {
       var res = JSON.parse(x.response);
       var urls = res.pages;
       if (urls) {
         for (url of Array.from(urls)) {
-          Loda.cachePage(url);
+          L.cachePage(url);
         }
       } else {
         document.dispatchEvent('api-error', { detail: { error: res.err } })
@@ -275,20 +283,20 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     var data = {
       action: "loading_page",
       current_page: a.href,
-      api_key: Loda.LODA_ID
+      api_key: L.LODA_ID
     };
     if (f) {
       a.href = f;
       data.last_page = a.href;
     }
-    x.open("POST", Loda.SERVER);
+    x.open("POST", L.SERVER);
     x.send(JSON.stringify(data));
 
     function fetchUrl(url) {
-      Loda.caching[url] = true;
+      L.caching[url] = true;
       var x = new XMLHttpRequest();
       x.addEventListener("load", () => {
-        Loda.cache[url] = x.response;
+        L.cache[url] = x.response;
         //Trim cache here
       });
       x.open("GET", url);
@@ -297,7 +305,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
   };
 
   //Called when a user clicked on a Loda-enabled anchor.
-  Loda.clickLink = e => {
+  L.clickLink = e => {
     var d;
     if (typeof e == `string`) d = e;
     else {
@@ -311,24 +319,24 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       while (d && !d.getAttribute("loda-href")) d = d.parentNode;
       d = d.getAttribute("loda-href");
     }
-    var last_page = Loda.LAST_PAGE;
-    Loda.loadPage(d);
-    if (typeof Loda.LODA_ID == "string") Loda.pollServer(d, last_page);
+    var last_page = L.LAST_PAGE;
+    L.loadPage(d);
+    if (typeof L.LODA_ID == "string") L.pollServer(d, last_page);
   };
 
   //Retreives a page for preloading.
-  Loda.loadPage = (e, pop) => {
-    Loda.LAST_PAGE = e;
-    if (Loda.cache[e])
+  L.loadPage = (e, pop) => {
+    L.LAST_PAGE = e;
+    if (L.cache[e])
       setTimeout(() => {
-        Loda.showPage(e, pop);
+        L.showPage(e, pop);
       }, 0);
-    else Loda.cachePage(e, true, pop);
+    else L.cachePage(e, true, pop);
   };
 
   function makeDeferredPageLoadSpooler() {
-    if(!Loda.deferredPageLoadSpooler) {
-      Loda.deferredPageLoadSpooler = setTimeout(()=>{
+    if(!L.deferredPageLoadSpooler) {
+      L.deferredPageLoadSpooler = setTimeout(()=>{
         var b = document.body;
         b.style.cursor = "none";
         b.style.pointerEvents = "none";
@@ -339,7 +347,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
 
   //Called when the movement prediction detects a hover.
   //If the hovered element (or ancestor) has an href, preload it.
-  Loda.startHover = e => {
+  L.startHover = e => {
     var d = e.target;
     while (
       d &&
@@ -349,24 +357,24 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
       d = d.parentNode;
     if (d && typeof d.getAttribute == "function") {
       d = d.getAttribute("loda-href");
-      if (Loda.cacheTimer) {
-        clearTimeout(Loda.cacheTimer);
+      if (L.cacheTimer) {
+        clearTimeout(L.cacheTimer);
       }
-      Loda.cacheTimer = setTimeout(() => {
-        Loda.cachePage(d);
+      L.cacheTimer = setTimeout(() => {
+        L.cachePage(d);
       }, 0);
     }
   };
-  Loda.endHover = e => {
-    if (Loda.cacheTimer) {
-      clearTimeout(Loda.cacheTimer);
+  L.endHover = e => {
+    if (L.cacheTimer) {
+      clearTimeout(L.cacheTimer);
     }
   };
 
   //Cache a page if it is not already cached or being cached.
-  Loda.cachePage = (page, show, pop) => {
+  L.cachePage = (page, show, pop) => {
     if(show) {
-        Loda.queuedPage = page;
+        L.queuedPage = page;
         document.dispatchEvent(
           new CustomEvent(
             "page-queued",
@@ -381,15 +389,15 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
           )
         );
     }
-    if (Loda.caching[page]) return;
-    Loda.caching[page] = true;
-    var sp = Loda.storedPageFor(page);
+    if (L.caching[page]) return;
+    L.caching[page] = true;
+    var sp = L.storedPageFor(page);
     if (
-      Loda.getSiteVersion() > -1 &&
+      L.getSiteVersion() > -1 &&
       sp &&
-      sp.version >= Loda.getSiteVersion()
+      sp.version >= L.getSiteVersion()
     ) {
-      Loda.cache[page] = sp.content;
+      L.cache[page] = sp.content;
       document.dispatchEvent(
         new CustomEvent(
           "permacache-hit",
@@ -402,11 +410,11 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
           }
         )
       );
-      if (Loda.queuedPage) Loda.showPage(page, pop);
+      if (L.queuedPage) L.showPage(page, pop);
     } else {
       var x = new XMLHttpRequest();
       x.addEventListener("load", () => {
-        Loda.cache[page] = x.response;
+        L.cache[page] = x.response;
         document.dispatchEvent(
           new CustomEvent(
             "page-cached",
@@ -420,13 +428,13 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
             }
           )
         );
-        Loda.cleanCache(x.response.length);
-        if (Loda.getSiteVersion() > -1 && (Loda.cacheSize() + x.response.length < 4000000)) {
+        L.cleanCache(x.response.length);
+        if (L.getSiteVersion() > -1 && (L.cacheSize() + x.response.length < 4000000)) {
           localStorage.setItem(
             page,
             JSON.stringify({
               content: x.response,
-              version: Loda.getSiteVersion(),
+              version: L.getSiteVersion(),
               date:+new Date(),
               last_used: +new Date(),
               owner: "Loda"
@@ -442,7 +450,7 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
             )
           );
         }
-        if (Loda.queuedPage) Loda.showPage(Loda.queuedPage, pop);
+        if (L.queuedPage) L.showPage(L.queuedPage, pop);
       });
       x.open("GET", page);
       x.send();
@@ -450,10 +458,10 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
   };
 
   //Display a cached page.
-  Loda.showPage = (page, pop) => {
+  L.showPage = (page, pop) => {
     var html;
     if (page) {
-      html = Loda.cache[page];
+      html = L.cache[page];
       window.document.open();
       window.document.write(html);
       window.document.close();
@@ -466,103 +474,22 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
           page
         );
       setTimeout(() => {
-        Loda.loader();
+        L.loader();
       }, 0);
     } else {
-      //Loda.queuedPage = page;
+      //L.queuedPage = page;
       cachePage("index.html", true, true);
     }
   };
 
   var foreseen;
 
-  Loda.moved = e => {
-    var c = {
-      x: e.clientX,
-      y: e.clientY,
-      f: Loda.frame++
-    };
-    Loda.cpos = c;
-    Loda.pollCursor();
-  };
-
-  //Get the cursor's current position and calculate its trajectory.
-  Loda.pollCursor = () => {
-    var c = Loda.cpos;
-
-    //deltas
-    var p = Loda.lastPos || { x: 0, y: 0 };
-    var p2 = Loda.cpos || { x: 0, y: 0 };
-    var delta = {
-      x: p2.x - p.x,
-      y: p2.y - p.y
-    };
-    if (!delta) delta = { x: 0, y: 0 };
-
-    //Maybe make X3
-    var projectedDelta = { x: delta.x * 8, y: delta.y * 8 };
-    //requestAnimationFrame(Loda.pollCursor);
-    Loda.predictedCpos = Loda.sum(c, projectedDelta);
-    Loda.hoverElement(Loda.predictedCpos);
-      Loda.lastPos = Loda.cpos;
-  };
-
-  //See if the cursor's projected trajectory includes an element to forsee a hover event for.
-  Loda.hoverElement = pos => {
-    var el = document.elementFromPoint(~~pos.x, ~~pos.y);
-    if (foreseen && (!el || el != foreseen)) {
-      Loda.remc(foreseen, "prehover");
-      foreseen.dispatchEvent(
-        new CustomEvent(
-          "erphover", //The foreseen hover ain't coming through
-          {
-            bubbles: true,
-            cancelable: true
-          }
-        )
-      );
-    }
-    if (el && foreseen != el) {
-      var oldAncestors = [];
-      var node = foreseen;
-      while (node) {
-        node = node.parentNode;
-        oldAncestors.push(node);
-      }
-      var newAncestors = [];
-      var node = el;
-      while (node) {
-        node = node.parentNode;
-        newAncestors.push(node);
-      }
-      for (var node of Array.from(oldAncestors))
-        if (node && node.classList && newAncestors.indexOf(node) < 0)
-          Loda.remc(node, "prehover");
-      for (var node of Array.from(newAncestors))
-        if (node && node.classList && oldAncestors.indexOf(node) < 0)
-          Loda.addc(node, "prehover");
-
-      Loda.addc(el, "prehover");
-      el.dispatchEvent(
-        new CustomEvent("prehover", {
-          bubbles: true,
-          cancelable: true
-        })
-      );
-      foreseen = el;
-    }
-    if (el)
-      Loda.startHover({
-        target: el
-      });
-  };
-
   //reload the page to clear the cache if the user clicks back or next
-  Loda.popPage = o => {
+  L.popPage = o => {
     //location.reload();
     //alert(JSON.stringify(o.state))
-    if(event.state === null/*Loda.changingHash*/ && Loda.changingHash) {
-      Loda.changingHash = false;
+    if(event.state === null/*L.changingHash*/ && L.changingHash) {
+      L.changingHash = false;
       //alert();
     } else {
       location.reload();
@@ -570,12 +497,12 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
 
   };
 
-  Loda.ignoreNav = o => {
-    Loda.changingHash = true;
+  L.ignoreNav = o => {
+    L.changingHash = true;
   }
 
   //Sum two coordinates.
-  Loda.sum = (posa, posb) => {
+  L.sum = (posa, posb) => {
     return {
       x: posa.x + posb.x,
       y: posa.y + posb.y
@@ -583,20 +510,20 @@ if(location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
   };
 
   //Log something to the #log box if one exists.
-  Loda.log = text => {
-    if (!Loda.logbox) Loda.logbox = Loda.grab("log");
-    if (Loda.logbox)
-      Loda.logbox.innerHTML =
+  L.log = text => {
+    if (!L.logbox) L.logbox = L.grab("log");
+    if (L.logbox)
+      L.logbox.innerHTML =
         typeof text === "object" ? JSON.stringify(text) : text;
   };
 
-Loda.getSiteVersion = () => {
-  var ts = Loda.grab("loda-script");
+L.getSiteVersion = () => {
+  var ts = L.grab("loda-script");
 
   return ts ? ts.getAttribute("site-version") || -1 : -1;
 };
 
-Loda.storedPageFor = page => {
+L.storedPageFor = page => {
   var data = localStorage.getItem(page);
   try {
     data = JSON.parse(data);
@@ -604,9 +531,9 @@ Loda.storedPageFor = page => {
   return data || 0;
 };
 
-Loda.pollCursor();
+//L.pollCursor();
 
-Loda.cacheSize = () => {
+L.cacheSize = () => {
   var cacheSize = 0;
   for(var i = 0, len = localStorage.length; i < len; ++ i) {
     var k = localStorage.key(i);
@@ -624,8 +551,8 @@ Loda.cacheSize = () => {
   return cacheSize;
 }
 
-Loda.cleanCache = (extra) => {
-  var cacheSize = Loda.cacheSize();
+L.cleanCache = (extra) => {
+  var cacheSize = L.cacheSize();
   while(cacheSize + extra > 4000000 && cacheSize > 0) {
     var cacheSize = 0;
     var earliestDate = +new Date();
@@ -677,7 +604,7 @@ Loda.cleanCache = (extra) => {
 
 }
 
-Loda.fload = (url, body, expectJson, params) => {
+L.fload = (url, body, expectJson, params) => {
   var state = 0, data = {}, json, succCb, failCb, response, fetchComplete, domLoaded;
   if(typeof body == 'object') {
     body = JSON.stringify(body);
@@ -718,18 +645,20 @@ Loda.fload = (url, body, expectJson, params) => {
   function trySuccess(res) {
     if(res)response = res;
     state++;
-    if(response && (domLoaded||Loda.domLoaded)) {
+    if(response && (domLoaded||L.domLoaded)) {
       if(succCb)succCb(response);
     }
   }
-  Loda.bind(window, 'DOMContentLoaded',e=>{
+  L.bind(window, 'DOMContentLoaded',e=>{
     domLoaded = true;
     trySuccess()
   })
   return this;
 }
-Loda.bind(window, 'DOMContentLoaded', e => {
-  Loda.domLoaded = true;
+L.bind(window, 'DOMContentLoaded', e => {
+  L.domLoaded = true;
 })
+
+Loda = L;
 
 }
