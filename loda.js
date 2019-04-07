@@ -256,8 +256,8 @@ if (location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
                         });
                         links[i].addEventListener("mousedown", L.clickLink);
                         a.href = links[i].getAttribute("href");
-                        links[i].setAttribute("loda-href", a.href);
-                        links[i].setAttribute("href", "javascript:void(0);");
+                        links[i].setAttribute("loda-href", "true");
+                        //links[i].setAttribute("href", "javascript:void(0);");
                     } else { //Just a hash change...probably
                         links[i].addEventListener('click', L.ignoreNav);
                     }
@@ -337,13 +337,13 @@ if (location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
         else {
             var d = e.target;
             if (e.button) {
-                if (e.button == 2)
-                    d.href = d.getAttribute('loda-href');
                 return;
+            } else if(e.button === 0) {
+              e.preventDefault();
             }
             makeDeferredPageLoadSpooler();
-            while (d && !d.getAttribute("loda-href")) d = d.parentNode;
-            d = d.getAttribute("loda-href");
+            while (d && !d.href) d = d.parentNode;
+            d = d.href;
         }
         var last_page = L.LAST_PAGE;
         L.loadPage(d);
@@ -378,11 +378,11 @@ if (location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
         while (
             d &&
             typeof d.getAttribute == "function" &&
-            !d.getAttribute("loda-href")
+            !d.href
         )
             d = d.parentNode;
         if (d && typeof d.getAttribute == "function") {
-            d = d.getAttribute("loda-href");
+            d = d.href;
             if (L.cacheTimer) {
                 clearTimeout(L.cacheTimer);
             }
