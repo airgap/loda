@@ -4,7 +4,7 @@
 An open-source JavaScript library that reduces page load times by up to 90%. Seriously. 90%.
 
 ## What It Isn't
-Bulky and complex. Loda is currently under 6KB and requires zero setup.
+Bulky and complex. Loda is currently under 3KB gzipped and requires zero setup.
 
 # Features
 
