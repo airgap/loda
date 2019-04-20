@@ -1000,8 +1000,3 @@ if (location.href.match(/(^|\?|&)loda-disabled(=(true|1))?($|&)/)) {
     Loda = L;
 
 }
-
-// Congrats, you made it to the end!
-// Take a break, grab a glass of water, and go for a walk.
-
-// Or just down a Red Bull or two and keep working. Yeah, that sounds better.
