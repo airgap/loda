@@ -4,7 +4,7 @@ I'll keep this short and sweet.
 
 ## Usage
 
-Loda is free to use for personal and non-commercial projects. Commercial licensing is coming soon; contact [info@loda.rocks](mailto:info@loda.rocks) for more information.
+Loda is free to use for personal and non-commercial projects. Commercial licensing is coming soon; contact [birdie@loda.rocks](mailto:info@loda.rocks) for more information.
 
 You may not resell Loda, modified or unmodified. You may distribute Loda, modified or unmodified, as part of a website or web-based application, but not as a stand-alone download or as part of a larger package.
 
