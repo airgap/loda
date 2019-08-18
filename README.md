@@ -33,21 +33,15 @@ We're proud to say Loda is probably the craziest JavaScript library ever invente
 
 # Setup
 
-## Wordpress
-We do have a Wordpress plugin for Loda but it frequently lags several versions behind so until we update it we recommend using the following setup method:
+Loda is available minified in both [ES5](loda.es5.min.js) and [ES6](loda.es6.min.js)</a> variants. The [ES6](loda.es6.min.js) version is incompatible with some older browsers (e.g. IE) but is slightly smaller than the [ES5](loda.es5.min.js) version.
 
-1. In your site settings, install the "Header Footer Code Manager" plugin
-2. In the plugin settings, click "Add New"
-3. Configure the snippet however you need
-4. Paste `<script src="https://loda.rocks/libraries/0@latest/loda.min.js"></script>` into the "Snippet / Code" box and click "Save"
+Additionally, you can download the source [TypeScript](loda.ts) as well as the unminified [JavaScript](loda.js).
 
-## Ghost
-1. Go to the Code Injection panel in your Ghost site settings
-2. Paste `<script src="https://loda.rocks/libraries/0@latest/loda.min.js"></script>` into the Blog Header editor and click "Save"
+So, to recap:
 
-## Other
-
-1. Add `<script src="https://loda.rocks/libraries/0@latest/loda.min.js"></script>` somewhere in your `<head>`
-2. You're done.
-3. Seriously.
-4. Everything's automatic.
+File | Description
+---- | ----
+[Minified ES5](loda.es5.min.js) | You probably want this one
+[Minified ES6](loda.es6.min.js) | Smaller but less compatible
+[Unminified JavaScript](loda.js) | If you want to edit it
+[Source TypeScript](loda.ts) | If you enjoy lengthy compilation times
