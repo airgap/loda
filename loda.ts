@@ -349,6 +349,7 @@ const actualLoader = () => {
         //   I'm not sure what this next bit does and...
         //   the target domain is the current domain
         if (links[i].href &&
+            !links[i].getAttribute('loda-bound') &&
             !links[i].getAttribute('loda-disabled') &&
             links[i].href.match(/^https?:\/\//) &&
             !links[i].getAttribute('target') &&
@@ -373,7 +374,7 @@ const actualLoader = () => {
                 a.href = links[i].getAttribute("href");
 
                 // Mark this link as accelerated by Loda
-                links[i].setAttribute("loda-href", "true");
+                links[i].setAttribute("loda-bound", "true");
 
             } else { //Just a hash change...probably
                 links[i].addEventListener('click', ignoreNav);
@@ -731,11 +732,13 @@ const showPage = (page, pop) => {
 
         // Set the HTML to the cached copy of the page
         html = pageCache[page];
+        if(!html)return;
 
         // Display the new page
         window.document.open();
         window.document.write(html);
         window.document.close();
+        console.log('OPENED WROTE CLOSED', html);
 
         // Pop state if necessary
         if (!pop)
