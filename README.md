@@ -45,3 +45,5 @@ File | Description
 [Minified ES6](loda.es6.min.js) | Smaller but less compatible
 [Unminified JavaScript](loda.js) | If you want to edit it
 [Source TypeScript](loda.ts) | If you enjoy lengthy compilation times
+[Minified ES5 Map](loda.es5.min.js.map) | For ES5 debugging
+[Minified ES6 Map](loda.es6.min.js.map) | Same but ES6
