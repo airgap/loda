@@ -26,7 +26,7 @@ Reliability is always the #1 priority, so we've designed Loda to fail as elegant
 Copy and Paste implementation Loda may be a complex piece of digital equipment, but it's designed from the ground up for ease of use. All you have to do to benefit from Loda's many features is copy+paste a single line of code into your pages' <head> tag. That's it. Everything else is automatic.
 
 ## Event Anticipation
-Possibly the zaniest feature Loda provides is the ability to trigger hover events before the cursor actually mouses over an element. Using the same movement-prediction algorithm powering the click anticipation and autocaching, Loda tracks cursor movement and accurately predicts when an element is about to be hovered over, adding the .prehover class and triggering the prehover event before the cursor even touches the element.
+Possibly the zaniest feature Loda provides is the ability to trigger hover events before the cursor actually mouses over an element. Using the same [movement-prediction algorithm](https://github.com/airgap/ftl) powering the click anticipation and autocaching, Loda tracks cursor movement and accurately predicts when an element is about to be hovered over, adding the .prehover class and triggering the prehover event before the cursor even touches the element.
 
 ## So Crazy It Works
 We're proud to say Loda is probably the craziest JavaScript library ever invented. We load pages before they're needed, trigger events before they occur, and pack Rapid Machine Learning into a single `<script>` reference. No, this isn't some April Fools joke, this is the real deal. Sometimes crazy is a good thing.
