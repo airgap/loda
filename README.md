@@ -35,7 +35,7 @@ We're proud to say Loda is probably the craziest JavaScript library ever invente
 
 Loda is available minified in both [ES5](loda.es5.min.js) and [ES6](loda.es6.min.js)</a> variants. The [ES6](loda.es6.min.js) version is incompatible with some older browsers (e.g. IE) but is slightly smaller than the [ES5](loda.es5.min.js) version.
 
-Additionally, you can download the source [TypeScript](loda.ts) as well as the unminified [JavaScript](loda.js). If you want to debug the minified JavaScript more easily, we recommend downloading one of the minification maps linked below.
+Additionally, you can download the source [TypeScript](src/loda.ts) as well as the unminified [JavaScript](loda.js). If you want to debug the minified JavaScript more easily, we recommend downloading one of the minification maps linked below.
 
 So, to recap:
 
@@ -44,6 +44,6 @@ File | Description
 [Minified ES5](loda.es5.min.js) | You probably want this one
 [Minified ES6](loda.es6.min.js) | Smaller but less compatible
 [Unminified JavaScript](loda.js) | If you want to edit it
-[Source TypeScript](loda.ts) | If you enjoy lengthy compilation times
+[Source TypeScript](src/loda.ts) | If you enjoy lengthy compilation times
 [Minified ES5 Map](loda.es5.min.js.map) | For ES5 debugging
 [Minified ES6 Map](loda.es6.min.js.map) | Same but ES6

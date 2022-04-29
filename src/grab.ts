@@ -1,0 +1,1 @@
+export default (elem: string | Element) => typeof elem === 'string' ? document.getElementById(elem) : elem;
