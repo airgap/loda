@@ -2,12 +2,19 @@
 	"name": "loda",
 	"version": "1.0.0",
 	"devDependencies": {
+		"parcel": "^2.5.0",
 		"prettier": "2.6.2",
+		"vite": "^2.9.6",
+		"vite-plugin-markdown": "^2.0.2",
 		"xo": "^0.48.0"
 	},
 	"scripts": {
 		"lint": "xo --fix \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
-		"test": "xo \"{src/**/*,*}.{js,ts,jsx,tsx,json}\""
+		"test": "xo \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
+		"dev": "vite --config demo/vite.config.ts",
+		"build": "parcel build src/loda.ts",
+		"preview": "vite preview --config demo/vite.config.ts",
+		"clean": "rm -rf dist node_modules package-lock.json .parcel-cache"
 	},
 	"xo": {
 		"prettier": "true",

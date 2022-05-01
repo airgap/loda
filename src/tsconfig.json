@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "nodenext",
+		"module": "es2022",
 		"target": "ES2020",
 		"lib": ["DOM", "DOM.Iterable", "ES2020"],
 		"allowSyntheticDefaultImports": true,
@@ -21,7 +21,8 @@
 		"noEmitOnError": true,
 		"useDefineForClassFields": true,
 		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"outDir": "../dist"
 	},
 	"exclude": ["node_modules"]
 }

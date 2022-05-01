@@ -161,7 +161,7 @@ export class Loda {
 
 			// See if there's a proxy to use
 			const customMlEndpoint = ts.getAttribute('ml-endpoint');
-			this.mlEndpoint = customMlEndpoint ?? 'https://api.loda.rocks';
+			this.mlEndpoint = customMlEndpoint ?? 'https://api.loda.io';
 			this.usingCustomMlEndpoint = Boolean(customMlEndpoint);
 		}
 
