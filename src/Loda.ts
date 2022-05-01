@@ -8,7 +8,47 @@ import { getHashPos } from './getHashPos'
 import { formatLink } from './formatLink'
 import { CachedPage } from './CachedPage'
 
+export class Cache {
+	// Cache of downloaded pages.
+	html = new Map<string, string>()
+
+	// Pages that are currently being cached.
+	started = new Set<string>()
+
+	loadingAnimation = new LoadingAnimation()
+}
+
+export class LoadingAnimation {
+	// The timer that says when to kick in
+	kickinTimer?: number
+
+	/**
+	 * @function makeDeferredPageLoadSpooler
+	 * @memberof Loda
+	 * @description Show a page spooling animation if a load is taking too long.
+	 * Currently non-functional
+	 */
+	triggerWhenNecessary = () => {
+		if (!this.kickinTimer) {
+			this.kickinTimer = window.setTimeout(() => {
+				const b = document.body
+				b.style.cursor = 'none'
+				b.style.pointerEvents = 'none'
+				b.style.opacity = '.5'
+			}, 500)
+		}
+	}
+	nevermind = () => {
+		// Prevent any spooling animations from displaying
+		if (this.kickinTimer) {
+			clearTimeout(this.kickinTimer)
+			this.kickinTimer = undefined
+		}
+	}
+}
+
 export class Loda {
+	cache = new Cache()
 	// Is true if the hash is currently being changed
 
 	ignoreNav = false
@@ -18,12 +58,6 @@ export class Loda {
 
 	// Loaded first time
 	loaded = false
-
-	// Cache of downloaded pages.
-	pageCache = new Map<string, string>()
-
-	// Pages that are currently being cached.
-	cachingPages = new Set<string>()
 
 	// Pages that already have the RML-generated list of pages to pageCache retrieved.
 	loadedFor: string[] = []
@@ -44,23 +78,17 @@ export class Loda {
 	mlEndpoint = 'https://api.loda.io'
 	usingCustomMlEndpoint = false
 
-	deferredPageLoadSpooler?: number
-
 	/**
 	 * @function loader
 	 * @memberof Loda
 	 * @description Runs on page load. Prepares for Loda initialization.
 	 */
 	loader = () => {
-		// Prevent any spooling animations from displaying
-		if (this.deferredPageLoadSpooler) {
-			clearTimeout(this.deferredPageLoadSpooler)
-			this.deferredPageLoadSpooler = undefined
-		}
+		this.cache.loadingAnimation.nevermind()
 
 		// Dispatch the page-loading event
 		dispatchEventOnDocument('page-loading', {
-			cache: this.pageCache
+			cache: this.cache.html
 		})
 
 		// Clear and renew the Loda initialization delay
@@ -212,7 +240,7 @@ export class Loda {
 			}
 
 			// Trigger a spooling animation if the page takes too long to load
-			this.makeDeferredPageLoadSpooler()
+			this.cache.loadingAnimation.triggerWhenNecessary()
 
 			// Climb ancestors until an anchor is found
 			//    Useful when a span is clicked inside a Loda-boosted anchor
@@ -249,30 +277,13 @@ export class Loda {
 		this.LAST_PAGE = page
 
 		// If the current page is cached
-		if (this.pageCache.has(page))
+		if (this.cache.html.has(page))
 			// Display the page
 			setTimeout(() => {
 				this.showPage(page, pop)
 			}, 0)
 		// Otherwise, pageCache the page and try again
 		else void this.cachePage(page, true, pop)
-	}
-
-	/**
-	 * @function makeDeferredPageLoadSpooler
-	 * @memberof Loda
-	 * @description Show a page spooling animation if a load is taking too long.
-	 * Currently non-functional
-	 */
-	makeDeferredPageLoadSpooler = () => {
-		if (!this.deferredPageLoadSpooler) {
-			this.deferredPageLoadSpooler = window.setTimeout(() => {
-				const b = document.body
-				b.style.cursor = 'none'
-				b.style.pointerEvents = 'none'
-				b.style.opacity = '.5'
-			}, 500)
-		}
 	}
 
 	/**
@@ -294,10 +305,10 @@ export class Loda {
 		}
 
 		// If the page is already being cached, don't do anything
-		if (this.cachingPages.has(page)) return
+		if (this.cache.started.has(page)) return
 
 		// Mark the page as being cached
-		this.cachingPages.add(page)
+		this.cache.started.add(page)
 
 		// Get the stored copy of the requested page
 		const sp = this.storedPageFor(page)
@@ -309,7 +320,7 @@ export class Loda {
 			sp.version >= this.getSiteVersion()
 		) {
 			// Load the page from permacache (localStorage) and alert the masses
-			this.pageCache.set(page, sp.content)
+			this.cache.html.set(page, sp.content)
 			dispatchEventOnDocument('permacache-hit', {
 				page
 			})
@@ -324,7 +335,7 @@ export class Loda {
 			const html = await response.text()
 
 			// Page gotten. Alert the masses
-			this.pageCache.set(page, html)
+			this.cache.html.set(page, html)
 			dispatchEventOnDocument('page-cached', {
 				page,
 				content: html
@@ -372,7 +383,7 @@ export class Loda {
 		// If the page exists, display it
 		if (page) {
 			// Set the HTML to the cached copy of the page
-			html = this.pageCache.get(page)
+			html = this.cache.html.get(page)
 			if (!html) return
 
 			// Display the new page
@@ -587,6 +598,3 @@ export class Loda {
 		this.ignoreNav = true
 	}
 }
-
-const loda = new Loda()
-loda.init()

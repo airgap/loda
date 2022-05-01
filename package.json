@@ -8,11 +8,12 @@
 		"vite-plugin-markdown": "^2.0.2",
 		"xo": "^0.48.0"
 	},
+	"main": "dist/index.js",
 	"scripts": {
 		"lint": "xo --fix \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
 		"test": "xo \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
 		"dev": "vite --config demo/vite.config.ts",
-		"build": "parcel build src/loda.ts",
+		"build": "npm run lint && parcel build src/index.ts",
 		"preview": "vite preview --config demo/vite.config.ts",
 		"clean": "rm -rf dist node_modules package-lock.json .parcel-cache"
 	},
