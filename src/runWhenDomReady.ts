@@ -6,5 +6,6 @@ import { bind } from './bind';
  * @description Run a function on DOM load.
  * @param {function} func - function to run
  */
-export const runWhenDomReady = (func: Function) =>
+export const runWhenDomReady = (func: () => unknown) => {
 	bind(window, 'DOMContentLoaded', func);
+};

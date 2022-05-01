@@ -22,7 +22,10 @@
 						"snakeCase": false
 					}
 				}
-			]
+			],
+			"unicorn/prefer-query-selector": 0,
+			"import/extensions": 0,
+			"@typescript-eslint/naming-convention": 0
 		},
 		"no-semicolon": true
 	},

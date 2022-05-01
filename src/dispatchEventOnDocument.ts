@@ -4,10 +4,13 @@
  * @param {object} detail - event detail
  */
 
-export const dispatchEventOnDocument = (event: string, detail?: any) => {
+export const dispatchEventOnDocument = (
+	event: string,
+	detail?: Record<string, unknown>
+) => {
 	document.dispatchEvent(
 		new CustomEvent(event, {
-			detail,
+			detail
 		})
 	);
 };
