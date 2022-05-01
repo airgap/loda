@@ -1,0 +1,35 @@
+{
+	"name": "loda",
+	"version": "1.0.0",
+	"devDependencies": {
+		"prettier": "2.6.2",
+		"xo": "^0.48.0"
+	},
+	"scripts": {
+		"lint": "xo --fix \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
+		"test": "xo \"{src/**/*,*}.{js,ts,jsx,tsx,json}\""
+	},
+	"xo": {
+		"prettier": "true",
+		"rules": {
+			"unicorn/filename-case": [
+				"error",
+				{
+					"cases": {
+						"camelCase": true,
+						"pascalCase": true,
+						"kebabCase": false,
+						"snakeCase": false
+					}
+				}
+			]
+		},
+		"no-semicolon": true
+	},
+	"eslintConfig": {
+		"extends": [
+			"xo",
+			"xo-typescript"
+		]
+	}
+}
