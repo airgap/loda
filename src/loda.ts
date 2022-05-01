@@ -1,50 +1,50 @@
 // Helper functions. Soon to be replaced.
 
-import { grab } from './grab';
+import { grab } from './grab'
 
-import { dispatchEventOnDocument } from './dispatchEventOnDocument';
-import { runWhenDomReady } from './runWhenDomReady';
-import { getHashPos } from './getHashPos';
-import { formatLink } from './formatLink';
-import { CachedPage } from './CachedPage';
+import { dispatchEventOnDocument } from './dispatchEventOnDocument'
+import { runWhenDomReady } from './runWhenDomReady'
+import { getHashPos } from './getHashPos'
+import { formatLink } from './formatLink'
+import { CachedPage } from './CachedPage'
 
 export class Loda {
 	// Is true if the hash is currently being changed
 
-	ignoreNav = false;
+	ignoreNav = false
 
 	// Is true if the load binder is trying to run
-	binderTimeout?: number;
+	binderTimeout?: number
 
 	// Loaded first time
-	loaded = false;
+	loaded = false
 
 	// Cache of downloaded pages.
-	pageCache = new Map<string, string>();
+	pageCache = new Map<string, string>()
 
 	// Pages that are currently being cached.
-	cachingPages = new Set<string>();
+	cachingPages = new Set<string>()
 
 	// Pages that already have the RML-generated list of pages to pageCache retrieved.
-	loadedFor: string[] = [];
+	loadedFor: string[] = []
 
 	// Automatically set by retrieving value from the Loda script tag.
 	// Required for RML, and requires Loda account.
 	// Not required for any other features.
-	lodaId?: string;
+	lodaId?: string
 
 	// Keeps track of what page was just navigated away from.
-	LAST_PAGE?: string;
+	LAST_PAGE?: string
 
 	// Stores the page that will be shown after load if link is clicked.
-	queuedPage?: string;
+	queuedPage?: string
 
 	// Override this to pass API calls through a custom proxy to protect your
 	// API key and to allow you to filter requests to prevent DoS and other abuse
-	mlEndpoint = 'https://api.loda.io';
-	usingCustomMlEndpoint = false;
+	mlEndpoint = 'https://api.loda.io'
+	usingCustomMlEndpoint = false
 
-	deferredPageLoadSpooler?: number;
+	deferredPageLoadSpooler?: number
 
 	/**
 	 * @function loader
@@ -54,22 +54,22 @@ export class Loda {
 	loader = () => {
 		// Prevent any spooling animations from displaying
 		if (this.deferredPageLoadSpooler) {
-			clearTimeout(this.deferredPageLoadSpooler);
-			this.deferredPageLoadSpooler = undefined;
+			clearTimeout(this.deferredPageLoadSpooler)
+			this.deferredPageLoadSpooler = undefined
 		}
 
 		// Dispatch the page-loading event
 		dispatchEventOnDocument('page-loading', {
 			cache: this.pageCache
-		});
+		})
 
 		// Clear and renew the Loda initialization delay
 		if (this.binderTimeout) {
-			clearTimeout(this.binderTimeout);
+			clearTimeout(this.binderTimeout)
 		}
 
-		this.binderTimeout = window.setTimeout(this.actualLoader, 10);
-	};
+		this.binderTimeout = window.setTimeout(this.actualLoader, 10)
+	}
 
 	/**
 	 * @function actualLoader
@@ -79,39 +79,39 @@ export class Loda {
 	actualLoader = async () => {
 		// If no body exists, retry initialization
 		if (!document.body) {
-			this.loader();
-			return;
+			this.loader()
+			return
 		}
 
 		// Manually trigger load events
 		if (this.loaded) {
-			dispatchEventOnDocument('page-loaded');
+			dispatchEventOnDocument('page-loaded')
 			for (const d of [document, window]) {
-				d.dispatchEvent(new UIEvent('load'));
+				d.dispatchEvent(new UIEvent('load'))
 			}
 		}
 
 		// Remember this page for when the user navigates away
-		this.LAST_PAGE = location.href;
+		this.LAST_PAGE = location.href
 
 		// Find all the anchors on the page
-		const links = document.querySelectorAll('a');
+		const links = document.querySelectorAll('a')
 
 		// Get the current domain
-		const srcDomain = location.hostname;
+		const srcDomain = location.hostname
 
-		const srcHashPos = getHashPos();
+		const srcHashPos = getHashPos()
 
 		// Iterate over all links on the current page
 		for (const link of links) {
 			// Get the current link's href
-			const { href } = link;
+			const { href } = link
 
 			// Get its hash's location in the URL
-			let destHashPos = href.indexOf('#');
+			let destHashPos = href.indexOf('#')
 
 			// If no hash exists, pretend there's one at the end
-			if (destHashPos === -1) destHashPos = href.length;
+			if (destHashPos === -1) destHashPos = href.length
 
 			// If the link is actually a link and...
 			//   doesn't have loda-disabled and...
@@ -138,31 +138,31 @@ export class Loda {
 					)
 				) {
 					// Just a hash change...probably
-					link.addEventListener('click', this.handleHashChange);
+					link.addEventListener('click', this.handleHashChange)
 				} else {
 					// Different page
 
 					// Load the page from pageCache when the link is clicked down upon
-					link.addEventListener('mousedown', this.clickLink);
+					link.addEventListener('mousedown', this.clickLink)
 
 					// Mark this link as accelerated by Loda
-					link.setAttribute('loda-bound', 'true');
+					link.setAttribute('loda-bound', 'true')
 				}
 			}
 		}
 
 		// Find an element, probably the <script> reffing Loda, tagged as the Loda config
-		const ts = grab('loda-script');
+		const ts = grab('loda-script')
 
 		// If the Loda element exists
 		if (ts) {
-			const id = ts.getAttribute('loda-id');
-			if (id) this.lodaId = id;
+			const id = ts.getAttribute('loda-id')
+			if (id) this.lodaId = id
 
 			// See if there's a proxy to use
-			const customMlEndpoint = ts.getAttribute('ml-endpoint');
-			this.mlEndpoint = customMlEndpoint ?? 'https://api.loda.io';
-			this.usingCustomMlEndpoint = Boolean(customMlEndpoint);
+			const customMlEndpoint = ts.getAttribute('ml-endpoint')
+			this.mlEndpoint = customMlEndpoint ?? 'https://api.loda.io'
+			this.usingCustomMlEndpoint = Boolean(customMlEndpoint)
 		}
 
 		// If Loda's ID or a proxy has been set, poll the server or proxy for RML data
@@ -170,16 +170,16 @@ export class Loda {
 			(typeof this.lodaId === 'string' || this.usingCustomMlEndpoint) &&
 			!this.loadedFor.includes(location.href)
 		) {
-			void this.pollServer(location.href);
-			this.loadedFor.push(location.href);
+			void this.pollServer(location.href)
+			this.loadedFor.push(location.href)
 		}
 
 		// Dispatch page-prepped event
-		dispatchEventOnDocument('page-prepped');
+		dispatchEventOnDocument('page-prepped')
 
 		// Page is loaded
-		this.loaded = true;
-	};
+		this.loaded = true
+	}
 
 	/**
 	 * @function clickLink
@@ -189,53 +189,53 @@ export class Loda {
 	 */
 	clickLink = async (event: string | MouseEvent) => {
 		// This will contain the URL to load
-		let element;
+		let element
 
 		// If event is a URL, we're good
-		if (typeof event === `string`) element = event;
+		if (typeof event === `string`) element = event
 		// If event is a click event, get the URL from it
 		else {
 			// Get the element clicked
-			element = event.target as Element;
+			element = event.target as Element
 
 			// If event is a click event with button > 1 (not left click)
 			if (event.button) {
 				// Don't interfere with the click
-				return;
+				return
 
 				// If it's a left-click
 			}
 
 			if (event.button === 0) {
 				// Cancel it
-				event.preventDefault();
+				event.preventDefault()
 			}
 
 			// Trigger a spooling animation if the page takes too long to load
-			this.makeDeferredPageLoadSpooler();
+			this.makeDeferredPageLoadSpooler()
 
 			// Climb ancestors until an anchor is found
 			//    Useful when a span is clicked inside a Loda-boosted anchor
 			while (element && !(element instanceof HTMLAnchorElement))
-				element = element.parentNode;
-			if (!element) return;
+				element = element.parentNode
+			if (!element) return
 			// Get the URL to load
-			element = element.href;
+			element = element.href
 		}
 
 		// D now contains a URL one way or antoher
 
 		// Store the last page in a temp variable
-		const last_page = this.LAST_PAGE;
+		const last_page = this.LAST_PAGE
 
 		// Load the new page
-		this.loadPage(element);
+		this.loadPage(element)
 
 		// Poll the server for new RML/DML data
 		// Note: might need to play with the variable a bit to fix a bug
 		if (typeof this.lodaId === 'string')
-			await this.pollServer(element, last_page);
-	};
+			await this.pollServer(element, last_page)
+	}
 
 	/**
 	 * @function loadPage
@@ -246,17 +246,17 @@ export class Loda {
 	 */
 	loadPage = (page: string, pop?: boolean) => {
 		// Set the last page variable to the current page
-		this.LAST_PAGE = page;
+		this.LAST_PAGE = page
 
 		// If the current page is cached
 		if (this.pageCache.has(page))
 			// Display the page
 			setTimeout(() => {
-				this.showPage(page, pop);
-			}, 0);
+				this.showPage(page, pop)
+			}, 0)
 		// Otherwise, pageCache the page and try again
-		else void this.cachePage(page, true, pop);
-	};
+		else void this.cachePage(page, true, pop)
+	}
 
 	/**
 	 * @function makeDeferredPageLoadSpooler
@@ -267,13 +267,13 @@ export class Loda {
 	makeDeferredPageLoadSpooler = () => {
 		if (!this.deferredPageLoadSpooler) {
 			this.deferredPageLoadSpooler = window.setTimeout(() => {
-				const b = document.body;
-				b.style.cursor = 'none';
-				b.style.pointerEvents = 'none';
-				b.style.opacity = '.5';
-			}, 500);
+				const b = document.body
+				b.style.cursor = 'none'
+				b.style.pointerEvents = 'none'
+				b.style.opacity = '.5'
+			}, 500)
 		}
-	};
+	}
 
 	/**
 	 * @function cachePage
@@ -286,21 +286,21 @@ export class Loda {
 	cachePage = async (page: string, show?: boolean, pop?: boolean) => {
 		// If we're going to show the page, queue it and alert the masses
 		if (show) {
-			this.queuedPage = page;
+			this.queuedPage = page
 			dispatchEventOnDocument('page-queued', {
 				page
 				/* Will eventually include the link that was clicked */
-			});
+			})
 		}
 
 		// If the page is already being cached, don't do anything
-		if (this.cachingPages.has(page)) return;
+		if (this.cachingPages.has(page)) return
 
 		// Mark the page as being cached
-		this.cachingPages.add(page);
+		this.cachingPages.add(page)
 
 		// Get the stored copy of the requested page
-		const sp = this.storedPageFor(page);
+		const sp = this.storedPageFor(page)
 
 		// Some permacaching magic
 		if (
@@ -309,29 +309,29 @@ export class Loda {
 			sp.version >= this.getSiteVersion()
 		) {
 			// Load the page from permacache (localStorage) and alert the masses
-			this.pageCache.set(page, sp.content);
+			this.pageCache.set(page, sp.content)
 			dispatchEventOnDocument('permacache-hit', {
 				page
-			});
+			})
 
 			// Show the permacached page
-			if (this.queuedPage) this.showPage(page, pop);
+			if (this.queuedPage) this.showPage(page, pop)
 		} else {
 			// Page not in permacache, need to fetch it from the web server
 
-			const response = await fetch(page);
+			const response = await fetch(page)
 
-			const html = await response.text();
+			const html = await response.text()
 
 			// Page gotten. Alert the masses
-			this.pageCache.set(page, html);
+			this.pageCache.set(page, html)
 			dispatchEventOnDocument('page-cached', {
 				page,
 				content: html
-			});
+			})
 
 			// Delete old pageCache items until there's enough room for the new page
-			this.cleanCache(html.length);
+			this.cleanCache(html.length)
 
 			// If permacaching is enabled, store the page in localStorage
 			if (
@@ -347,16 +347,16 @@ export class Loda {
 						last_used: Date.now(),
 						owner: 'Loda'
 					})
-				);
+				)
 
 				// Alert the masses! Page has been cached!
-				dispatchEventOnDocument('page-permacached');
+				dispatchEventOnDocument('page-permacached')
 			}
 
 			// Show the page already
-			if (this.queuedPage) this.showPage(this.queuedPage, pop);
+			if (this.queuedPage) this.showPage(this.queuedPage, pop)
 		}
-	};
+	}
 
 	/**
 	 * @function showPage
@@ -367,19 +367,19 @@ export class Loda {
 	 */
 	showPage = (page: string, pop = false) => {
 		// HTML to display
-		let html;
+		let html
 
 		// If the page exists, display it
 		if (page) {
 			// Set the HTML to the cached copy of the page
-			html = this.pageCache.get(page);
-			if (!html) return;
+			html = this.pageCache.get(page)
+			if (!html) return
 
 			// Display the new page
-			window.document.open();
-			window.document.write(html);
-			window.document.close();
-			console.log('OPENED WROTE CLOSED', html);
+			window.document.open()
+			window.document.write(html)
+			window.document.close()
+			console.log('OPENED WROTE CLOSED', html)
 
 			// Pop state if necessary
 			if (!pop)
@@ -389,16 +389,16 @@ export class Loda {
 					},
 					'',
 					page
-				);
+				)
 			// Trigger the loader function once page is written to DOM
 			setTimeout(() => {
-				this.loader();
-			}, 0);
+				this.loader()
+			}, 0)
 		} else {
 			// If page is not cached, pageCache it
-			void this.cachePage('index.html', true, true);
+			void this.cachePage('index.html', true, true)
 		}
-	};
+	}
 
 	/**
 	 * @function popPage
@@ -412,12 +412,12 @@ export class Loda {
 		// alert();
 		// alert(JSON.stringify(o.state))
 		if (o.state === null /* changingHash */ && this.ignoreNav) {
-			this.ignoreNav = false;
+			this.ignoreNav = false
 			// Alert();
 		} else {
-			location.reload();
+			location.reload()
 		}
-	};
+	}
 
 	/**
 	 * @function getSiteVersion
@@ -425,9 +425,9 @@ export class Loda {
 	 * @description Get the site version for permacaching purposes.
 	 */
 	getSiteVersion = () => {
-		const ts = grab('loda-script');
-		return ts ? ts.getAttribute('site-version') ?? -1 : -1;
-	};
+		const ts = grab('loda-script')
+		return ts ? ts.getAttribute('site-version') ?? -1 : -1
+	}
 
 	/**
 	 * @function storedPageFor
@@ -436,9 +436,9 @@ export class Loda {
 	 * @param {string} page - the page to grab from localStorage
 	 */
 	storedPageFor = (page: string) => {
-		const data = localStorage.getItem(page);
-		return data ? (JSON.parse(data) as CachedPage) : 0;
-	};
+		const data = localStorage.getItem(page)
+		return data ? (JSON.parse(data) as CachedPage) : 0
+	}
 
 	/**
 	 * @function cacheSize
@@ -446,26 +446,26 @@ export class Loda {
 	 * @description Get the amount of data stored in localStorage.
 	 */
 	getCacheSize = () => {
-		let cacheSize = 0;
+		let cacheSize = 0
 		for (let i = 0, length = localStorage.length; i < length; ++i) {
-			const k = localStorage.key(i);
-			if (!k) continue;
-			const v = localStorage.getItem(k);
-			if (!v) continue;
-			let data;
+			const k = localStorage.key(i)
+			if (!k) continue
+			const v = localStorage.getItem(k)
+			if (!v) continue
+			let data
 			try {
-				data = JSON.parse(v) as CachedPage;
+				data = JSON.parse(v) as CachedPage
 			} catch {
-				continue;
+				continue
 			}
 
 			if (data.owner === 'Loda') {
-				cacheSize += data.content.length;
+				cacheSize += data.content.length
 			}
 		}
 
-		return cacheSize;
-	};
+		return cacheSize
+	}
 
 	/**
 	 * @function cleanCache
@@ -474,43 +474,43 @@ export class Loda {
 	 * @param {number} extra - the amount of space needed in pageCache
 	 */
 	cleanCache = (extra: number) => {
-		let cacheSize = this.getCacheSize();
+		let cacheSize = this.getCacheSize()
 		while (cacheSize + extra > 4_000_000 && cacheSize > 0) {
-			cacheSize = 0;
-			let earliestDate = Date.now();
-			let earliestId;
+			cacheSize = 0
+			let earliestDate = Date.now()
+			let earliestId
 			for (let i = 0, length = localStorage.length; i < length; ++i) {
-				const k = localStorage.key(i);
-				if (!k) continue;
-				const v = localStorage.getItem(k);
-				if (!v) continue;
-				let data;
+				const k = localStorage.key(i)
+				if (!k) continue
+				const v = localStorage.getItem(k)
+				if (!v) continue
+				let data
 				try {
-					data = JSON.parse(v) as CachedPage;
+					data = JSON.parse(v) as CachedPage
 				} catch {
-					continue;
+					continue
 				}
 
 				if (data.owner === 'Loda') {
-					cacheSize += data.content.length;
+					cacheSize += data.content.length
 					if (data.last_used < earliestDate) {
-						earliestDate = data.last_used;
-						earliestId = k;
+						earliestDate = data.last_used
+						earliestId = k
 					}
 				}
 			}
 
 			if (earliestId) {
-				localStorage.removeItem(earliestId);
+				localStorage.removeItem(earliestId)
 				dispatchEventOnDocument('pageCache-trimmed', {
 					page: earliestId
-				});
+				})
 			}
 		}
 
 		// Alert the masses, the pageCache has been cleaned
-		dispatchEventOnDocument('pageCache-cleaned');
-	};
+		dispatchEventOnDocument('pageCache-cleaned')
+	}
 
 	/**
 	 * @function pollServer
@@ -530,63 +530,63 @@ export class Loda {
 		//    by sending the request to a proxy, you can have the proxy
 		//    append the Loda ID once the request is verified by your system
 		const data: {
-			action: string;
-			current_page: string;
-			api_key?: string;
-			last_page?: string;
+			action: string
+			current_page: string
+			api_key?: string
+			last_page?: string
 		} = {
 			action: 'loading_page',
 			current_page: formatLink(page),
 			api_key: this.lodaId
-		};
+		}
 
 		// If you want to grab the RML data for a page you're not currently on
-		if (lastPage) data.last_page = formatLink(lastPage);
+		if (lastPage) data.last_page = formatLink(lastPage)
 
 		const fetched = await fetch(this.mlEndpoint, {
 			body: JSON.stringify(data),
 			method: 'POST'
-		});
+		})
 
 		// Get the pages the RML or DML recommends cachingPages, currently the top five
 		const { err, pages } = (await fetched.json()) as {
-			pages: string[];
-			err?: unknown;
-		};
+			pages: string[]
+			err?: unknown
+		}
 
 		if (pages) {
 			// Cache all of them
 			for (const url of pages) {
 				// Fire and forget
-				void this.cachePage(url);
+				void this.cachePage(url)
 			}
 		} else {
 			// Uh oh! There's an error. Let's tell everyone!
 			dispatchEventOnDocument('api-error', {
 				error: err
-			});
+			})
 		}
-	};
+	}
 
 	init = () => {
 		// Listen for back and forward button clicks
 		try {
-			window.removeEventListener('popstate', this.popPage);
+			window.removeEventListener('popstate', this.popPage)
 		} catch {
-			console.log('popstate rebound');
+			console.log('popstate rebound')
 		}
 
-		window.addEventListener('popstate', this.popPage);
+		window.addEventListener('popstate', this.popPage)
 		// Alert('popPage bound')
 
 		// Trigger the loader on page load
-		runWhenDomReady(this.loader);
-	};
+		runWhenDomReady(this.loader)
+	}
 
 	private handleHashChange() {
-		this.ignoreNav = true;
+		this.ignoreNav = true
 	}
 }
 
-const loda = new Loda();
-loda.init();
+const loda = new Loda()
+loda.init()

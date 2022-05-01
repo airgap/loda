@@ -12,5 +12,5 @@ export const dispatchEventOnDocument = (
 		new CustomEvent(event, {
 			detail
 		})
-	);
-};
+	)
+}

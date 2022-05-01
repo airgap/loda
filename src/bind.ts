@@ -11,5 +11,5 @@ export const bind = (
 	trigger: string,
 	func: () => unknown
 ) => {
-	emitter.addEventListener(trigger, func as unknown as EventListenerObject);
-};
+	emitter.addEventListener(trigger, func as unknown as EventListenerObject)
+}

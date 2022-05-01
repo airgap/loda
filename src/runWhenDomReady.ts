@@ -1,4 +1,4 @@
-import { bind } from './bind';
+import { bind } from './bind'
 
 /**
  * @function onload
@@ -7,5 +7,5 @@ import { bind } from './bind';
  * @param {function} func - function to run
  */
 export const runWhenDomReady = (func: () => unknown) => {
-	bind(window, 'DOMContentLoaded', func);
-};
+	bind(window, 'DOMContentLoaded', func)
+}
