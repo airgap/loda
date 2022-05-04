@@ -4,9 +4,20 @@ import { grab } from './grab'
 
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
 import { runWhenDomReady } from './runWhenDomReady'
-import { getHashPos } from './getHashPos'
 import { formatLink } from './formatLink'
 import { CachedPage } from './CachedPage'
+import { isAnchorLodaBound } from './isAnchorLodaBound'
+import { isAnchorLodaDisabled } from './isAnchorLodaDisabled'
+import { doesUrlHaveTarget } from './doesUrlHaveTarget'
+import { doesUrlMatchProtocol } from './doesUrlMatchProtocol'
+import { doProtocolsMatch } from './doProtocolsMatch'
+import { isLinkOfDomain } from './isLinkOfDomain'
+import { bind } from './bind'
+import { nothing } from './nothing'
+import { writeHtmlToDocument } from './writeHtmlToDocument'
+import { doesLocalStorageHaveRoom } from './doesLocalStorageHaveRoom'
+import { makeRoomInLocalStorage } from './makeRoomInLocalStorage'
+import { areUrlsIdenticalBeforeHash } from './areUrlsIdenticalBeforeHash'
 
 export class Cache {
 	// Cache of downloaded pages.
@@ -68,10 +79,10 @@ export class Loda {
 	lodaId?: string
 
 	// Keeps track of what page was just navigated away from.
-	LAST_PAGE?: string
+	lastPage?: string
 
 	// Stores the page that will be shown after load if link is clicked.
-	queuedPage?: string
+	queuedUrl?: string
 
 	// Override this to pass API calls through a custom proxy to protect your
 	// API key and to allow you to filter requests to prevent DoS and other abuse
@@ -79,11 +90,11 @@ export class Loda {
 	usingCustomMlEndpoint = false
 
 	/**
-	 * @function loader
+	 * @function prepareForLoad
 	 * @memberof Loda
 	 * @description Runs on page load. Prepares for Loda initialization.
 	 */
-	loader = () => {
+	prepareForLoad = () => {
 		this.cache.loadingAnimation.nevermind()
 
 		// Dispatch the page-loading event
@@ -107,7 +118,7 @@ export class Loda {
 	actualLoader = async () => {
 		// If no body exists, retry initialization
 		if (!document.body) {
-			this.loader()
+			this.prepareForLoad()
 			return
 		}
 
@@ -120,7 +131,7 @@ export class Loda {
 		}
 
 		// Remember this page for when the user navigates away
-		this.LAST_PAGE = location.href
+		this.lastPage = location.href
 
 		// Find all the anchors on the page
 		const links = document.querySelectorAll('a')
@@ -128,18 +139,10 @@ export class Loda {
 		// Get the current domain
 		const srcDomain = location.hostname
 
-		const srcHashPos = getHashPos()
-
 		// Iterate over all links on the current page
 		for (const link of links) {
 			// Get the current link's href
 			const { href } = link
-
-			// Get its hash's location in the URL
-			let destHashPos = href.indexOf('#')
-
-			// If no hash exists, pretend there's one at the end
-			if (destHashPos === -1) destHashPos = href.length
 
 			// If the link is actually a link and...
 			//   doesn't have loda-disabled and...
@@ -149,29 +152,27 @@ export class Loda {
 			//   the target domain is the current domain
 			if (
 				href &&
-				!link.getAttribute('loda-bound') &&
-				!link.getAttribute('loda-disabled') &&
-				/^https?:\/\//.test(href) &&
-				!link.getAttribute('target') &&
-				/^(.+?):\/\//.exec(location.href)?.[1] ===
-					/^(.+?):\/\//.exec(href)?.[1] &&
-				new RegExp('^https?://' + srcDomain + '([:/#]|$)').test(href)
+				!isAnchorLodaBound(link) &&
+				!isAnchorLodaDisabled(link) &&
+				doesUrlMatchProtocol(href, 'https?') &&
+				!doesUrlHaveTarget(link) &&
+				doProtocolsMatch(href, location.href) &&
+				isLinkOfDomain(href, srcDomain)
 			) {
 				// Ensure the target page is not the active page,
 				//   i.e. links to the same page will just trigger reload per usual
-				if (
-					location.href.endsWith(
-						href.slice(0, Math.max(0, destHashPos)),
-						srcHashPos
-					)
-				) {
+				if (areUrlsIdenticalBeforeHash(location.href, href)) {
 					// Just a hash change...probably
-					link.addEventListener('click', this.handleHashChange)
+					bind(link, 'click', this.handleHashChange)
 				} else {
 					// Different page
 
 					// Load the page from pageCache when the link is clicked down upon
-					link.addEventListener('mousedown', this.clickLink)
+					bind(
+						link,
+						'mousedown',
+						this.clickLink as unknown as EventListener
+					)
 
 					// Mark this link as accelerated by Loda
 					link.setAttribute('loda-bound', 'true')
@@ -254,7 +255,7 @@ export class Loda {
 		// D now contains a URL one way or antoher
 
 		// Store the last page in a temp variable
-		const last_page = this.LAST_PAGE
+		const lastPage = this.lastPage
 
 		// Load the new page
 		this.loadPage(element)
@@ -262,7 +263,7 @@ export class Loda {
 		// Poll the server for new RML/DML data
 		// Note: might need to play with the variable a bit to fix a bug
 		if (typeof this.lodaId === 'string')
-			await this.pollServer(element, last_page)
+			await this.pollServer(element, lastPage)
 	}
 
 	/**
@@ -272,85 +273,85 @@ export class Loda {
 	 * @param {string} page - the page to load
 	 * @param {boolean} pop - whether to show the page
 	 */
-	loadPage = (page: string, pop?: boolean) => {
+	loadPage = async (page: string, pop?: boolean) => {
 		// Set the last page variable to the current page
-		this.LAST_PAGE = page
+		this.lastPage = page
 
 		// If the current page is cached
-		if (this.cache.html.has(page))
+		if (this.cache.html.has(page)) {
 			// Display the page
-			setTimeout(() => {
-				this.showPage(page, pop)
-			}, 0)
+			await nothing(0)
+			await this.showPage(page, pop)
+		}
 		// Otherwise, pageCache the page and try again
-		else void this.cachePage(page, true, pop)
+		else await this.cachePage(page, true, pop)
 	}
 
 	/**
 	 * @function cachePage
 	 * @memberof Loda
 	 * @description Cache a page if it is not already cached or being cached.
-	 * @param {string} page - the page to load
+	 * @param {string} url - the page to load
 	 * @param {boolean} show - whether to show the page
 	 * @param {boolean} pop - whether to pop states
 	 */
-	cachePage = async (page: string, show?: boolean, pop?: boolean) => {
+	cachePage = async (url: string, show?: boolean, pop?: boolean) => {
 		// If we're going to show the page, queue it and alert the masses
 		if (show) {
-			this.queuedPage = page
+			this.queuedUrl = url
 			dispatchEventOnDocument('page-queued', {
-				page
+				page: url
 				/* Will eventually include the link that was clicked */
 			})
 		}
 
-		// If the page is already being cached, don't do anything
-		if (this.cache.started.has(page)) return
+		// If the page is already being cached in memory, don't do anything
+		if (this.cache.started.has(url)) return
 
 		// Mark the page as being cached
-		this.cache.started.add(page)
+		this.cache.started.add(url)
 
 		// Get the stored copy of the requested page
-		const sp = this.storedPageFor(page)
+		const storedPage = this.storedPageFor(url)
 
 		// Some permacaching magic
 		if (
-			this.getSiteVersion() > -1 &&
-			sp &&
-			sp.version >= this.getSiteVersion()
+			this.getSiteVersion() != -1 &&
+			storedPage &&
+			storedPage.version >= this.getSiteVersion()
 		) {
-			// Load the page from permacache (localStorage) and alert the masses
-			this.cache.html.set(page, sp.content)
+			// Copy the CachedPage from localStorage into memory and alert the masses
+			this.cache.html.set(url, storedPage.content)
 			dispatchEventOnDocument('permacache-hit', {
-				page
+				page: url
 			})
 
 			// Show the permacached page
-			if (this.queuedPage) this.showPage(page, pop)
+			if (this.queuedUrl) this.showPage(url, pop)
 		} else {
 			// Page not in permacache, need to fetch it from the web server
 
-			const response = await fetch(page)
+			const response = await fetch(url)
 
 			const html = await response.text()
 
 			// Page gotten. Alert the masses
-			this.cache.html.set(page, html)
+			this.cache.html.set(url, html)
 			dispatchEventOnDocument('page-cached', {
-				page,
+				page: url,
 				content: html
 			})
 
 			// Delete old pageCache items until there's enough room for the new page
-			this.cleanCache(html.length)
+			makeRoomInLocalStorage(html.length)
 
 			// If permacaching is enabled, store the page in localStorage
 			if (
 				this.getSiteVersion() > -1 &&
-				this.getCacheSize() + html.length < 4_000_000
+				doesLocalStorageHaveRoom(html.length)
 			) {
 				localStorage.setItem(
-					page,
+					url,
 					JSON.stringify({
 						content: html,
 						version: this.getSiteVersion(),
@@ -365,7 +366,7 @@ export class Loda {
 			}
 
 			// Show the page already
-			if (this.queuedPage) this.showPage(this.queuedPage, pop)
+			if (this.queuedUrl) this.showPage(this.queuedUrl, pop)
 		}
 	}
 
@@ -376,7 +377,7 @@ export class Loda {
 	 * @param {string} page - the page to show
 	 * @param {boolean} pop - whether to pop states
 	 */
-	showPage = (page: string, pop = false) => {
+	showPage = async (page: string, pop = false) => {
 		// HTML to display
 		let html
 
@@ -387,10 +388,7 @@ export class Loda {
 			if (!html) return
 
 			// Display the new page
-			window.document.open()
-			window.document.write(html)
-			window.document.close()
-			console.log('OPENED WROTE CLOSED', html)
+			writeHtmlToDocument(html)
 
 			// Pop state if necessary
 			if (!pop)
@@ -401,14 +399,12 @@ export class Loda {
 					'',
 					page
 				)
+			await nothing(0)
 			// Trigger the loader function once page is written to DOM
-			setTimeout(() => {
-				this.loader()
-			}, 0)
-		} else {
-			// If page is not cached, pageCache it
-			void this.cachePage('index.html', true, true)
+			this.prepareForLoad()
 		}
+		// If page is not cached, pageCache it
+		else void this.cachePage('index.html', true, true)
 	}
 
 	/**
@@ -435,9 +431,9 @@ export class Loda {
 	 * @memberof Loda
 	 * @description Get the site version for permacaching purposes.
 	 */
-	getSiteVersion = () => {
-		const ts = grab('loda-script')
-		return ts ? ts.getAttribute('site-version') ?? -1 : -1
+	getSiteVersion = (): number => {
+		const versionString = grab('loda-script')?.getAttribute('site-version')
+		return Number(versionString) || -1
 	}
 
 	/**
@@ -449,78 +445,6 @@ export class Loda {
 	storedPageFor = (page: string) => {
 		const data = localStorage.getItem(page)
 		return data ? (JSON.parse(data) as CachedPage) : 0
-	}
-
-	/**
-	 * @function cacheSize
-	 * @memberof Loda
-	 * @description Get the amount of data stored in localStorage.
-	 */
-	getCacheSize = () => {
-		let cacheSize = 0
-		for (let i = 0, length = localStorage.length; i < length; ++i) {
-			const k = localStorage.key(i)
-			if (!k) continue
-			const v = localStorage.getItem(k)
-			if (!v) continue
-			let data
-			try {
-				data = JSON.parse(v) as CachedPage
-			} catch {
-				continue
-			}
-
-			if (data.owner === 'Loda') {
-				cacheSize += data.content.length
-			}
-		}
-
-		return cacheSize
-	}
-
-	/**
-	 * @function cleanCache
-	 * @memberof Loda
-	 * @description Delete pageCache items until a certain amount of free space is left.
-	 * @param {number} extra - the amount of space needed in pageCache
-	 */
-	cleanCache = (extra: number) => {
-		let cacheSize = this.getCacheSize()
-		while (cacheSize + extra > 4_000_000 && cacheSize > 0) {
-			cacheSize = 0
-			let earliestDate = Date.now()
-			let earliestId
-			for (let i = 0, length = localStorage.length; i < length; ++i) {
-				const k = localStorage.key(i)
-				if (!k) continue
-				const v = localStorage.getItem(k)
-				if (!v) continue
-				let data
-				try {
-					data = JSON.parse(v) as CachedPage
-				} catch {
-					continue
-				}
-
-				if (data.owner === 'Loda') {
-					cacheSize += data.content.length
-					if (data.last_used < earliestDate) {
-						earliestDate = data.last_used
-						earliestId = k
-					}
-				}
-			}
-
-			if (earliestId) {
-				localStorage.removeItem(earliestId)
-				dispatchEventOnDocument('pageCache-trimmed', {
-					page: earliestId
-				})
-			}
-		}
-
-		// Alert the masses, the pageCache has been cleaned
-		dispatchEventOnDocument('pageCache-cleaned')
 	}
 
 	/**
@@ -591,7 +515,7 @@ export class Loda {
 		// Alert('popPage bound')
 
 		// Trigger the loader on page load
-		runWhenDomReady(this.loader)
+		runWhenDomReady(this.prepareForLoad)
 	}
 
 	private handleHashChange() {
