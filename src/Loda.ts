@@ -4,14 +4,14 @@ import { grab } from './grab'
 
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
 import { runWhenDomReady } from './runWhenDomReady'
-import { formatLink } from './formatLink'
+import { formatUrl } from './formatUrl'
 import { CachedPage } from './CachedPage'
 import { isAnchorLodaBound } from './isAnchorLodaBound'
 import { isAnchorLodaDisabled } from './isAnchorLodaDisabled'
 import { doesUrlHaveTarget } from './doesUrlHaveTarget'
 import { doesUrlMatchProtocol } from './doesUrlMatchProtocol'
 import { doProtocolsMatch } from './doProtocolsMatch'
-import { isLinkOfDomain } from './isLinkOfDomain'
+import { isAnchorOfDomain } from './isAnchorOfDomain'
 import { bind } from './bind'
 import { nothing } from './nothing'
 import { writeHtmlToDocument } from './writeHtmlToDocument'
@@ -65,9 +65,7 @@ export class Loda {
 		})
 
 		// Clear and renew the Loda initialization delay
-		if (this.binderTimeout) {
-			clearTimeout(this.binderTimeout)
-		}
+		if (this.binderTimeout) clearTimeout(this.binderTimeout)
 
 		this.binderTimeout = window.setTimeout(this.actualLoader, 10)
 	}
@@ -96,17 +94,17 @@ export class Loda {
 		this.lastPage = location.href
 
 		// Find all the anchors on the page
-		const links = document.querySelectorAll('a')
+		const anchors = document.querySelectorAll('a')
 
 		// Get the current domain
 		const srcDomain = location.hostname
 
-		// Iterate over all links on the current page
-		for (const link of links) {
-			// Get the current link's href
-			const { href } = link
+		// Iterate over all anchors on the current page
+		for (const anchor of anchors) {
+			// Get the current anchor's href
+			const { href } = anchor
 
-			// If the link is actually a link and...
+			// If the anchor is actually a anchor and...
 			//   doesn't have loda-disabled and...
 			//   starts with a valid protocol and...
 			//   doesn't have a target set and...
@@ -114,30 +112,30 @@ export class Loda {
 			//   the target domain is the current domain
 			if (
 				href &&
-				!isAnchorLodaBound(link) &&
-				!isAnchorLodaDisabled(link) &&
+				!isAnchorLodaBound(anchor) &&
+				!isAnchorLodaDisabled(anchor) &&
 				doesUrlMatchProtocol(href, 'https?') &&
-				!doesUrlHaveTarget(link) &&
+				!doesUrlHaveTarget(anchor) &&
 				doProtocolsMatch(href, location.href) &&
-				isLinkOfDomain(href, srcDomain)
+				isAnchorOfDomain(href, srcDomain)
 			) {
 				// Ensure the target page is not the active page,
-				//   i.e. links to the same page will just trigger reload per usual
+				//   i.e. anchors to the same page will just trigger reload per usual
 				if (areUrlsIdenticalBeforeHash(location.href, href)) {
 					// Just a hash change...probably
-					bind(link, 'click', this.handleHashChange)
+					bind(anchor, 'click', this.handleHashChange)
 				} else {
 					// Different page
 
-					// Load the page from pageCache when the link is clicked down upon
+					// Load the page from pageCache when the anchor is clicked down upon
 					bind(
-						link,
+						anchor,
 						'mousedown',
 						this.clickLink as unknown as EventListener
 					)
 
-					// Mark this link as accelerated by Loda
-					link.setAttribute('loda-bound', 'true')
+					// Mark this anchor as accelerated by Loda
+					anchor.setAttribute('loda-bound', 'true')
 				}
 			}
 		}
@@ -433,12 +431,12 @@ export class Loda {
 			last_page?: string
 		} = {
 			action: 'loading_page',
-			current_page: formatLink(page),
+			current_page: formatUrl(page),
 			api_key: this.lodaId
 		}
 
 		// If you want to grab the RML data for a page you're not currently on
-		if (lastPage) data.last_page = formatLink(lastPage)
+		if (lastPage) data.last_page = formatUrl(lastPage)
 
 		const fetched = await fetch(this.mlEndpoint, {
 			body: JSON.stringify(data),
