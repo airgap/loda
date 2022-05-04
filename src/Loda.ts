@@ -217,13 +217,19 @@ export class Loda {
 		// Store the last page in a temp variable
 		const lastPage = this.lastPage
 
+		// Gotta multitask now
+		const promises: Array<Promise<void>> = []
+
 		// Load the new page
-		this.loadPage(element)
+		promises.push(this.loadPage(element))
 
 		// Poll the server for new RML/DML data
 		// Note: might need to play with the variable a bit to fix a bug
 		if (typeof this.lodaId === 'string')
-			await this.pollServer(element, lastPage)
+			promises.push(this.pollServer(element, lastPage))
+
+		// Run the async code and return
+		await Promise.all(promises)
 	}
 
 	/**
@@ -276,7 +282,7 @@ export class Loda {
 
 		// Some permacaching magic
 		if (
-			this.getSiteVersion() != -1 &&
+			this.getSiteVersion() !== -1 &&
 			storedPage &&
 			storedPage.version >= this.getSiteVersion()
 		) {
@@ -287,7 +293,7 @@ export class Loda {
 			})
 
 			// Show the permacached page
-			if (this.queuedUrl) this.showPage(url, pop)
+			if (this.queuedUrl) void this.showPage(url, pop)
 		} else {
 			// Page not in permacache, need to fetch it from the web server
 
@@ -326,7 +332,7 @@ export class Loda {
 			}
 
 			// Show the page already
-			if (this.queuedUrl) this.showPage(this.queuedUrl, pop)
+			if (this.queuedUrl) void this.showPage(this.queuedUrl, pop)
 		}
 	}
 

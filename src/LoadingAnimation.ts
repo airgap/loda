@@ -18,6 +18,7 @@ export class LoadingAnimation {
 			}, 500)
 		}
 	}
+
 	nevermind = () => {
 		// Prevent any spooling animations from displaying
 		if (this.kickinTimer) {

@@ -1,2 +1,2 @@
 export const doesUrlHaveTarget = (link: HTMLAnchorElement): boolean =>
-	!!link.getAttribute('target')
+	Boolean(link.getAttribute('target'))

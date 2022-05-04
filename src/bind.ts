@@ -12,4 +12,6 @@ export const bind = (
 	trigger: string,
 	func: EventListenerOrEventListenerObject,
 	options?: AddEventListenerOptions | boolean
-) => emitter.addEventListener(trigger, func, options)
+) => {
+	emitter.addEventListener(trigger, func, options)
+}
