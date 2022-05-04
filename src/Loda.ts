@@ -18,45 +18,7 @@ import { writeHtmlToDocument } from './writeHtmlToDocument'
 import { doesLocalStorageHaveRoom } from './doesLocalStorageHaveRoom'
 import { makeRoomInLocalStorage } from './makeRoomInLocalStorage'
 import { areUrlsIdenticalBeforeHash } from './areUrlsIdenticalBeforeHash'
-
-export class Cache {
-	// Cache of downloaded pages.
-	html = new Map<string, string>()
-
-	// Pages that are currently being cached.
-	started = new Set<string>()
-
-	loadingAnimation = new LoadingAnimation()
-}
-
-export class LoadingAnimation {
-	// The timer that says when to kick in
-	kickinTimer?: number
-
-	/**
-	 * @function makeDeferredPageLoadSpooler
-	 * @memberof Loda
-	 * @description Show a page spooling animation if a load is taking too long.
-	 * Currently non-functional
-	 */
-	triggerWhenNecessary = () => {
-		if (!this.kickinTimer) {
-			this.kickinTimer = window.setTimeout(() => {
-				const b = document.body
-				b.style.cursor = 'none'
-				b.style.pointerEvents = 'none'
-				b.style.opacity = '.5'
-			}, 500)
-		}
-	}
-	nevermind = () => {
-		// Prevent any spooling animations from displaying
-		if (this.kickinTimer) {
-			clearTimeout(this.kickinTimer)
-			this.kickinTimer = undefined
-		}
-	}
-}
+import { Cache } from './Cache'
 
 export class Loda {
 	cache = new Cache()
@@ -125,9 +87,9 @@ export class Loda {
 		// Manually trigger load events
 		if (this.loaded) {
 			dispatchEventOnDocument('page-loaded')
-			for (const d of [document, window]) {
-				d.dispatchEvent(new UIEvent('load'))
-			}
+			const loadEvent = new UIEvent('load')
+			document.dispatchEvent(loadEvent)
+			window.dispatchEvent(loadEvent)
 		}
 
 		// Remember this page for when the user navigates away

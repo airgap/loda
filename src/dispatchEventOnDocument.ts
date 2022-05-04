@@ -7,10 +7,9 @@
 export const dispatchEventOnDocument = (
 	event: string,
 	detail?: Record<string, unknown>
-) => {
+) =>
 	document.dispatchEvent(
 		new CustomEvent(event, {
 			detail
 		})
 	)
-}
