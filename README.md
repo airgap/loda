@@ -40,19 +40,29 @@ Possibly the zaniest feature Loda provides is the ability to trigger hover event
 
 We're proud to say Loda is probably the craziest JavaScript library ever invented. We load pages before they're needed, trigger events before they occur, and pack Rapid Machine Learning into a single `<script>` reference. No, this isn't some April Fools joke, this is the real deal. Sometimes crazy is a good thing.
 
-# Setup
+# Dev Setup
 
-Loda is available minified in both [ES5](loda.es5.min.js) and [ES6](loda.es6.min.js)</a> variants. The [ES6](loda.es6.min.js) version is incompatible with some older browsers (e.g. IE) but is slightly smaller than the [ES5](loda.es5.min.js) version.
+### Lint
+```
+npm run lint
+```
 
-Additionally, you can download the source [TypeScript](src/Loda.ts) as well as the unminified [JavaScript](loda.js). If you want to debug the minified JavaScript more easily, we recommend downloading one of the minification maps linked below.
+### Test
+```
+npm run test
+```
 
-So, to recap:
+### Demo
+```
+npm run dev
+```
 
-| File                                    | Description                            |
-| --------------------------------------- | -------------------------------------- |
-| [Minified ES5](loda.es5.min.js)         | You probably want this one             |
-| [Minified ES6](loda.es6.min.js)         | Smaller but less compatible            |
-| [Unminified JavaScript](loda.js)        | If you want to edit it                 |
-| [Source TypeScript](src/Loda.ts)        | If you enjoy lengthy compilation times |
-| [Minified ES5 Map](loda.es5.min.js.map) | For ES5 debugging                      |
-| [Minified ES6 Map](loda.es6.min.js.map) | Same but ES6                           |
+### Build
+```
+npm run build
+```
+
+### Clean
+```
+npm run clean
+```

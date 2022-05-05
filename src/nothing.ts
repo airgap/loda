@@ -1,3 +1,4 @@
-import { promisify } from 'util'
-
-export const nothing = promisify(window.setTimeout)
+export const nothing = async (ms: number) =>
+	new Promise((r) => {
+		window.setTimeout(r, ms)
+	})

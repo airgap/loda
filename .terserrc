@@ -1,0 +1,25 @@
+{
+	"compress": {
+		"defaults": true,
+		"evaluate": true,
+		"keep_infinity": true,
+		"passes": 3,
+		"pure_getters": true,
+		"unsafe": true,
+		"module": true,
+		"loops": true,
+		"reduce_vars": true,
+		"reduce_funcs": true,
+		"hoist_funs": true,
+		"sequences": true,
+		"toplevel": true
+	},
+	"mangle": {
+		"keep_classnames": false,
+		"module": true,
+		"toplevel": true
+	},
+	"format": {
+		"indent_level": 0
+	}
+}
