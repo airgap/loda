@@ -1,32 +1,30 @@
-import { CachedPage } from './CachedPage'
+import { getCacheSize } from './getCacheSize'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
-import { getLocalStorageSize } from './getLocalStorageSize'
 
 /**
- * @function cleanLocalStorage
+ * @function cleanCache
  * @memberof Loda
  * @description Delete pageCache items until a certain amount of free space is left.
- * @param {number} spaceNeeded - the amount of space needed in pageCache
+ * @param {number} extra - the amount of space needed in pageCache
  */
-export const makeRoomInLocalStorage = (spaceNeeded: number) => {
-	let cacheSize = getLocalStorageSize()
-	while (cacheSize + spaceNeeded > 4_000_000 && cacheSize > 0) {
+export const cleanCache = (extra: number) => {
+	let cacheSize = getCacheSize()
+	while (cacheSize + extra > 4000000 && cacheSize > 0) {
 		cacheSize = 0
-		let earliestDate = Date.now()
+		let earliestDate = +new Date()
 		let earliestId
-		for (let i = 0, length = localStorage.length; i < length; ++i) {
+		for (let i = 0, len = localStorage.length; i < len; ++i) {
 			const k = localStorage.key(i)
 			if (!k) continue
 			const v = localStorage.getItem(k)
 			if (!v) continue
 			let data
 			try {
-				data = JSON.parse(v) as CachedPage
-			} catch {
+				data = JSON.parse(v)
+			} catch (ex) {
 				continue
 			}
-
-			if (data.owner === 'Loda') {
+			if (data.owner == 'Loda') {
 				cacheSize += data.content.length
 				if (data.last_used < earliestDate) {
 					earliestDate = data.last_used
@@ -34,7 +32,6 @@ export const makeRoomInLocalStorage = (spaceNeeded: number) => {
 				}
 			}
 		}
-
 		if (earliestId) {
 			localStorage.removeItem(earliestId)
 			dispatchEventOnDocument('pageCache-trimmed', {

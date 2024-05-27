@@ -43,26 +43,31 @@ We're proud to say Loda is probably the craziest JavaScript library ever invente
 # Dev Setup
 
 ### Lint
+
 ```
 npm run lint
 ```
 
 ### Test
+
 ```
 npm run test
 ```
 
 ### Demo
+
 ```
 npm run dev
 ```
 
 ### Build
+
 ```
 npm run build
 ```
 
 ### Clean
+
 ```
 npm run clean
 ```

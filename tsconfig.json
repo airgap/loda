@@ -1,11 +1,10 @@
 {
 	"compilerOptions": {
-		"module": "es2022",
+		"module": "esnext",
 		"target": "ES5",
 		"lib": ["DOM", "DOM.Iterable", "ES2020"],
 		"allowSyntheticDefaultImports": true,
 		"resolveJsonModule": false,
-		"jsx": "react",
 		"declaration": true,
 		"pretty": true,
 		"newLine": "lf",
@@ -24,9 +23,9 @@
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
 		"outDir": "./dist",
-		"isolatedModules": true,
 		"downlevelIteration": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"moduleResolution": "Node"
 	},
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules", "demo"]
 }

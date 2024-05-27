@@ -1,6 +1,6 @@
-import { resolve } from 'path';
-import { sync } from 'glob';
-import { plugin, Mode } from 'vite-plugin-markdown';
+import { resolve } from 'path'
+import { sync } from 'glob'
+import { plugin, Mode } from 'vite-plugin-markdown'
 
 export default {
 	root: '.',
@@ -13,4 +13,4 @@ export default {
 	plugins: [plugin({ mode: [Mode.HTML] })]
 
 	// entryPoints: 'index.html'
-};
+}

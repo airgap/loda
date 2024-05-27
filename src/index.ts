@@ -1,4 +1,13 @@
-import { Loda } from './Loda'
+import { load } from './utils'
+import { loader } from './loader'
+import { popPage } from './popPage'
 
-const loda = new Loda()
-loda.init()
+// Trigger the loader on page load
+load(loader)
+//Listen for back and forward button clicks
+try {
+	window.removeEventListener('popstate', popPage)
+} catch (x) {
+	console.log('popstate rebound')
+}
+window.addEventListener('popstate', popPage)
