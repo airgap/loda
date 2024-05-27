@@ -19,10 +19,10 @@ export const pollServer = (e: string, f?: string) => {
 	x.addEventListener('load', () => {
 		// Parse server response
 		// Response will always be JSON, even in the case of errors
-		const res: { err: any; pages: string[] } = JSON.parse(x.response)
+		const result: { err: any; pages: string[] } = JSON.parse(x.response)
 
 		// Get the pages the RML or DML recommends cachingPages, currently the top five
-		const urls = res.pages
+		const urls = result.pages
 		if (urls) {
 			// Cache all of them
 			for (const url of urls) {
@@ -31,7 +31,7 @@ export const pollServer = (e: string, f?: string) => {
 		} else {
 			// Uh oh! There's an error. Let's tell everyone!
 			dispatchEventOnDocument('api-error', {
-				error: res.err
+				error: result.err
 			})
 		}
 	})

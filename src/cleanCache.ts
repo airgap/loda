@@ -1,6 +1,6 @@
 import { getCacheSize } from './getCacheSize'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
-import { PageInfo } from './PageInfo'
+import type { PageInfo } from './PageInfo'
 
 /**
  * @function cleanCache
@@ -21,7 +21,7 @@ export const cleanCache = (extra: number) => {
 			if (!v) continue
 			let data: PageInfo
 			try {
-				data = JSON.parse(v)
+				data = JSON.parse(v) as PageInfo
 			} catch {
 				continue
 			}

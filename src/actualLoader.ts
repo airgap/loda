@@ -1,4 +1,3 @@
-import { loader } from './loader'
 import { state } from './state'
 import { startHover } from './startHover'
 import { grab } from './utils'
@@ -12,12 +11,6 @@ import { dispatchEventOnDocument } from './dispatchEventOnDocument'
  * @description Initialize Loda.
  */
 export const actualLoader = () => {
-	// If no body exists, retry initialization
-	if (!document.body) {
-		loader()
-		return
-	}
-
 	// Manually trigger load events
 	if (state.loaded) {
 		dispatchEventOnDocument('page-loaded')
@@ -39,7 +32,7 @@ export const actualLoader = () => {
 	let sourceHashPos = location.href.indexOf('#')
 
 	// If there is no hash, pretend there's one at the end
-	if (sourceHashPos == -1) sourceHashPos = location.href.length
+	if (sourceHashPos === -1) sourceHashPos = location.href.length
 
 	// Iterate over all links on the current page
 	for (const link of links) {
@@ -50,7 +43,7 @@ export const actualLoader = () => {
 		let destinationHashPos = lh.indexOf('#')
 
 		// If no hash exists, pretend there's one at the end
-		if (destinationHashPos == -1) destinationHashPos = lh.length
+		if (destinationHashPos === -1) destinationHashPos = lh.length
 
 		// If the link is actually a link and...
 		//   doesn't have loda-disabled and...
@@ -64,8 +57,8 @@ export const actualLoader = () => {
 			!link.getAttribute('loda-disabled') &&
 			/^https?:\/\//.test(link.href) &&
 			!link.getAttribute('target') &&
-			(/^(.+?):\/\//.exec(location.href) || [0])[1] ==
-				(/^(.+?):\/\//.exec(lh) || [0])[1] &&
+			(/^(.+?):\/\//.exec(location.href) ?? [0])[1] ===
+				(/^(.+?):\/\//.exec(lh) ?? [0])[1] &&
 			new RegExp('^https?://' + sourceDomain + '([:/#]|$)').test(
 				link.href
 			)
@@ -73,7 +66,7 @@ export const actualLoader = () => {
 			// Ensure the target page is not the active page,
 			//   i.e. links to the same page will just trigger reload per usual
 			if (
-				lh.slice(0, Math.max(0, destinationHashPos)) ==
+				lh.slice(0, Math.max(0, destinationHashPos)) ===
 				location.href.slice(0, Math.max(0, sourceHashPos))
 			) {
 				// Just a hash change...probably
@@ -114,7 +107,7 @@ export const actualLoader = () => {
 
 		// See if there's a proxy to use
 		const server = ts.getAttribute('loda-proxy')
-		state.SERVER = server || 'https://api.loda.rocks'
+		state.SERVER = server ?? 'https://api.loda.rocks'
 		state.USING_PROXY = Boolean(server)
 	}
 

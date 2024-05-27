@@ -2,7 +2,7 @@
  * @function grab
  * @memberof Loda
  * @description Get an element or elements by their IDs.
- * @param {Element} elem - string containing id or pipe-separated id list
+ * @param {Element} element - string containing id or pipe-separated id list
  * @returns Element or array of Elements
  */
 export const grab = (element: string | Element) =>
@@ -16,11 +16,8 @@ export const grab = (element: string | Element) =>
  * @param {string} trigger - the event to listen to
  * @param {function} func - the function to trigger
  */
-export const bind = (emitter: any, trigger: string, function_: Function) =>
-	emitter.addEventListener(
-		trigger,
-		function_ as unknown as EventListenerObject
-	)
+export const bind = (emitter: any, trigger: string, func: () => void) =>
+	emitter.addEventListener(trigger, func as unknown as EventListenerObject)
 
 /**
  * @function onload
@@ -28,5 +25,4 @@ export const bind = (emitter: any, trigger: string, function_: Function) =>
  * @description Run a function on DOM load.
  * @param {function} func - function to run
  */
-export const load = (function_: Function) =>
-	bind(window, 'DOMContentLoaded', function_)
+export const load = (func: () => void) => bind(window, 'DOMContentLoaded', func)
