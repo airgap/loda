@@ -5,20 +5,22 @@
  */
 export const getCacheSize = () => {
 	let cacheSize = 0
-	for (let i = 0, len = localStorage.length; i < len; ++i) {
-		let k = localStorage.key(i)
+	for (let i = 0, length = localStorage.length; i < length; ++i) {
+		const k = localStorage.key(i)
 		if (!k) continue
-		let v = localStorage.getItem(k)
+		const v = localStorage.getItem(k)
 		if (!v) continue
 		let data
 		try {
 			data = JSON.parse(v)
-		} catch (ex) {
+		} catch {
 			continue
 		}
-		if (data.owner == 'Loda') {
+
+		if (data.owner === 'Loda') {
 			cacheSize += data.content.length
 		}
 	}
+
 	return cacheSize
 }

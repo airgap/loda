@@ -29,7 +29,7 @@ export const showPage = (page: string, pop?: boolean) => {
 		if (!pop)
 			history.pushState(
 				{
-					page: page
+					page
 				},
 				'',
 				page

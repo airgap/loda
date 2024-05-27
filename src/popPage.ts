@@ -6,12 +6,12 @@ import { state } from './state'
  * @description Reload the page to clear the pageCache if the user clicks back or next.
  */
 export const popPage = () => {
-	//location.reload();
-	//alert();
-	//alert(JSON.stringify(o.state))
+	// Location.reload();
+	// alert();
+	// alert(JSON.stringify(o.state))
 	if (state.changingHash) {
 		state.changingHash = false
-		//alert();
+		// Alert();
 	} else {
 		location.reload()
 	}

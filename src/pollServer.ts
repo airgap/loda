@@ -49,7 +49,7 @@ export const pollServer = (e: string, f?: string) => {
 	type Data = {
 		action: string
 		current_page: string
-		api_key?: string | null
+		api_key?: string | undefined
 		last_page?: string
 	}
 	const data: Data = {
@@ -61,7 +61,7 @@ export const pollServer = (e: string, f?: string) => {
 	// If you want to grab the RML data for a page you're not currently on
 	if (f) {
 		a.href = f
-		data['last_page'] = a.href
+		data.last_page = a.href
 	}
 
 	// Send the request

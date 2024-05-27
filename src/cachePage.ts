@@ -5,6 +5,7 @@ import { showPage } from './showPage'
 import { getCacheSize } from './getCacheSize'
 import { cleanCache } from './cleanCache'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
+import { type PageInfo } from './PageInfo'
 
 /**
  * @function cachePage
@@ -19,7 +20,7 @@ export const cachePage = (page: string, show?: boolean, pop?: boolean) => {
 	if (show) {
 		state.queuedPage = page
 		dispatchEventOnDocument('page-queued', {
-			page: page
+			page
 			/* Will eventually include the link that was clicked */
 		})
 	}
@@ -34,11 +35,11 @@ export const cachePage = (page: string, show?: boolean, pop?: boolean) => {
 	const sp = storedPageFor(page)
 
 	// Some permacaching magic
-	if (getSiteVersion() > -1 && sp && sp['version'] >= getSiteVersion()) {
+	if (getSiteVersion() > -1 && sp && sp.version >= getSiteVersion()) {
 		// Load the page from permacache (localStorage) and alert the masses
-		state.pageCache[page] = sp['content']
+		state.pageCache[page] = sp.content
 		dispatchEventOnDocument('permacache-hit', {
-			page: page
+			page
 		})
 
 		// Show the permacached page
@@ -52,8 +53,8 @@ export const cachePage = (page: string, show?: boolean, pop?: boolean) => {
 			// Page gotten. Alert the masses
 			state.pageCache[page] = x.response
 			dispatchEventOnDocument('page-cached', {
-				page: page,
-				content: x['response']
+				page,
+				content: x.response
 			})
 
 			// Delete old pageCache items until there's enough room for the new page
@@ -62,17 +63,17 @@ export const cachePage = (page: string, show?: boolean, pop?: boolean) => {
 			// If permacaching is enabled, store the page in localStorage
 			if (
 				getSiteVersion() > -1 &&
-				getCacheSize() + x.response.length < 4000000
+				getCacheSize() + x.response.length < 4_000_000
 			) {
 				localStorage.setItem(
 					page,
 					JSON.stringify({
 						content: x.response,
 						version: getSiteVersion(),
-						date: +new Date(),
-						last_used: +new Date(),
+						date: Date.now(),
+						last_used: Date.now(),
 						owner: 'Loda'
-					})
+					} as PageInfo)
 				)
 
 				// Alert the masses! Page has been cached!

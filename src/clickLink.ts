@@ -11,10 +11,10 @@ import { loadPage } from './loadPage'
  */
 export const clickLink = (e: string | MouseEvent) => {
 	// This will contain the URL to load
-	let href: string | null = null
+	let href: string | undefined
 
 	// If e is a URL, we're good
-	if (typeof e == `string`) href = e
+	if (typeof e === `string`) href = e
 	// If e is a click event, get the URL from it
 	else {
 		// Get the element clicked
@@ -26,7 +26,9 @@ export const clickLink = (e: string | MouseEvent) => {
 			return
 
 			// If it's a left-click
-		} else if (e.button === 0) {
+		}
+
+		if (e.button === 0) {
 			// Cancel it
 			e.preventDefault()
 		}
@@ -47,15 +49,15 @@ export const clickLink = (e: string | MouseEvent) => {
 		if (element instanceof HTMLAnchorElement) href = element.href
 	}
 
-	// d now contains a URL one way or antoher
+	// D now contains a URL one way or antoher
 	if (!href) throw new Error('Oops')
 	// Store the last page in a temp variable
-	let last_page = state.LAST_PAGE
+	const last_page = state.LAST_PAGE
 
 	// Load the new page
 	loadPage(href)
 
 	// Poll the server for new RML/DML data
 	// Note: might need to play with the variable a bit to fix a bug
-	if (typeof state.LODA_ID == 'string') pollServer(href, last_page)
+	if (typeof state.LODA_ID === 'string') pollServer(href, last_page)
 }

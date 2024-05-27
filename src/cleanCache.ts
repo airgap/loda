@@ -1,5 +1,6 @@
 import { getCacheSize } from './getCacheSize'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
+import { PageInfo } from './PageInfo'
 
 /**
  * @function cleanCache
@@ -9,22 +10,23 @@ import { dispatchEventOnDocument } from './dispatchEventOnDocument'
  */
 export const cleanCache = (extra: number) => {
 	let cacheSize = getCacheSize()
-	while (cacheSize + extra > 4000000 && cacheSize > 0) {
+	while (cacheSize + extra > 4_000_000 && cacheSize > 0) {
 		cacheSize = 0
-		let earliestDate = +new Date()
+		let earliestDate = Date.now()
 		let earliestId
-		for (let i = 0, len = localStorage.length; i < len; ++i) {
+		for (let i = 0, length = localStorage.length; i < length; ++i) {
 			const k = localStorage.key(i)
 			if (!k) continue
 			const v = localStorage.getItem(k)
 			if (!v) continue
-			let data
+			let data: PageInfo
 			try {
 				data = JSON.parse(v)
-			} catch (ex) {
+			} catch {
 				continue
 			}
-			if (data.owner == 'Loda') {
+
+			if (data.owner === 'Loda') {
 				cacheSize += data.content.length
 				if (data.last_used < earliestDate) {
 					earliestDate = data.last_used
@@ -32,6 +34,7 @@ export const cleanCache = (extra: number) => {
 				}
 			}
 		}
+
 		if (earliestId) {
 			localStorage.removeItem(earliestId)
 			dispatchEventOnDocument('pageCache-trimmed', {
