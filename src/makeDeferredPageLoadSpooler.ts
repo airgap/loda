@@ -8,9 +8,9 @@ import { state } from './state'
  */
 export const makeDeferredPageLoadSpooler = () => {
 	state.deferredPageLoadSpooler ??= setTimeout(() => {
-		const b = document.body
-		b.style.cursor = 'none'
-		b.style.pointerEvents = 'none'
-		b.style.opacity = '.5'
+		const { style } = document.body
+		style.cursor = 'none'
+		style.pointerEvents = 'none'
+		style.opacity = '.5'
 	}, 500)
 }

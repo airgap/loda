@@ -17,10 +17,10 @@ type State = {
 	// Automatically set by retrieving value from the Loda script tag.
 	// Required for RML, and requires Loda account.
 	// Not required for any other features.
-	LODA_ID?: string | undefined
+	lodaId?: string
 
 	// Keeps track of what page was just navigated away from.
-	LAST_PAGE?: string
+	lastPage?: string
 
 	// Stores the page that will be shown after load if link is clicked.
 	queuedPage?: string
@@ -28,8 +28,7 @@ type State = {
 	// Override this to pass API calls through a custom proxy to protect your
 	// API key and to allow you to filter requests to prevent DoS and other abuse
 	// Default server used to be 'https://api.loda.rocks', I may bring it back
-	SERVER?: string
-	USING_PROXY: boolean
+	mlEndpoint?: string
 	deferredPageLoadSpooler?: NodeJS.Timeout
 }
 export const state: State = {
@@ -41,6 +40,5 @@ export const state: State = {
 
 	cachingPages: {},
 
-	loadedFor: [],
-	USING_PROXY: false
+	loadedFor: []
 }

@@ -27,5 +27,5 @@
 		"esModuleInterop": true,
 		"moduleResolution": "Node"
 	},
-	"exclude": ["node_modules", "demo"]
+	"exclude": ["node_modules", "demo", "dist"]
 }

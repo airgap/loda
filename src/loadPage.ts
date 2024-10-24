@@ -6,19 +6,19 @@ import { cachePage } from './cachePage'
  * @function loadPage
  * @memberof Loda
  * @description Retreives a page for preloading.
- * @param {string} e - the page to load
+ * @param {string} page - the page to load
  * @param {boolean} pop - whether to show the page
  */
-export const loadPage = (e: string, pop?: boolean) => {
+export const loadPage = (page: string, pop?: boolean) => {
 	// Set the last page variable to the current page
-	state.LAST_PAGE = e
+	state.lastPage = page
 
 	// If the current page is cached
-	if (state.pageCache[e])
+	if (state.pageCache[page])
 		// Display the page
-		setTimeout(() => {
-			showPage(e, pop)
-		}, 0)
+		requestAnimationFrame(() => {
+			showPage(page, pop)
+		})
 	// Otherwise, pageCache the page and try again
-	else cachePage(e, true, pop)
+	else cachePage(page, true, pop)
 }

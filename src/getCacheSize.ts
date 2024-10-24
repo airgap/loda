@@ -8,19 +8,19 @@ import type { PageInfo } from './PageInfo'
 export const getCacheSize = (): number => {
 	let cacheSize = 0
 	for (let i = 0, length = localStorage.length; i < length; ++i) {
-		const k = localStorage.key(i)
-		if (!k) continue
-		const v = localStorage.getItem(k)
-		if (!v) continue
-		let data
+		const key = localStorage.key(i)
+		if (!key) continue
+		const value = localStorage.getItem(key)
+		if (!value) continue
+		let pageInfo: PageInfo
 		try {
-			data = JSON.parse(v) as PageInfo
+			pageInfo = JSON.parse(value)
 		} catch {
 			continue
 		}
 
-		if (data.owner === 'Loda') {
-			cacheSize += data.content.length
+		if (pageInfo.owner === 'Loda') {
+			cacheSize += pageInfo.content.length
 		}
 	}
 

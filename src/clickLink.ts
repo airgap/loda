@@ -7,31 +7,24 @@ import { loadPage } from './loadPage'
  * @function clickLink
  * @memberof Loda
  * @description Called when a user clicked on a Loda-enabled anchor.
- * @param {MouseEvent|string} e - click event or URL to explicitly follow
+ * @param {MouseEvent|string} event - click event or URL to explicitly follow
  */
-export const clickLink = (e: string | MouseEvent) => {
+export const clickLink = (event: string | MouseEvent) => {
 	// This will contain the URL to load
 	let href: string | undefined
 
 	// If e is a URL, we're good
-	if (typeof e === `string`) href = e
+	if (typeof event === `string`) href = event
 	// If e is a click event, get the URL from it
 	else {
 		// Get the element clicked
-		let element = e.target
+		let element = event.target
 
-		// If e is a click event with button > 1 (not left click)
-		if (e.button) {
-			// Don't interfere with the click
-			return
+		// Disregard clicks with button > 0 (not left click)
+		if (event.button) return
 
-			// If it's a left-click
-		}
-
-		if (e.button === 0) {
-			// Cancel it
-			e.preventDefault()
-		}
+		// Cancel left-click events
+		if (event.button === 0) event.preventDefault()
 
 		// Trigger a spooling animation if the page takes too long to load
 		makeDeferredPageLoadSpooler()
@@ -49,15 +42,16 @@ export const clickLink = (e: string | MouseEvent) => {
 		if (element instanceof HTMLAnchorElement) href = element.href
 	}
 
-	// D now contains a URL one way or antoher
+	// Href now contains a URL one way or another
 	if (!href) throw new Error('Oops')
+
 	// Store the last page in a temp variable
-	const last_page = state.LAST_PAGE
+	const lastPage = state.lastPage
 
 	// Load the new page
 	loadPage(href)
 
 	// Poll the server for new RML/DML data
 	// Note: might need to play with the variable a bit to fix a bug
-	if (typeof state.LODA_ID === 'string') pollServer(href, last_page)
+	if (typeof state.lodaId === 'string') pollServer(href, lastPage)
 }

@@ -5,14 +5,5 @@ import { state } from './state'
  * @memberof Loda
  * @description Reload the page to clear the pageCache if the user clicks back or next.
  */
-export const popPage = () => {
-	// Location.reload();
-	// alert();
-	// alert(JSON.stringify(o.state))
-	if (state.changingHash) {
-		state.changingHash = false
-		// Alert();
-	} else {
-		location.reload()
-	}
-}
+export const popPage = () =>
+	state.changingHash ? (state.changingHash = false) : location.reload()

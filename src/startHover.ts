@@ -7,9 +7,9 @@ import { cachePage } from './cachePage'
  * @description Called when the movement prediction detects a hover.
  * If the hovered element (or ancestor) has an href, preload it.
  */
-export const startHover = (e: { target: Element }) => {
+export const startHover = (event: { target: Element }) => {
 	// Get the hovered element
-	let element: Element | ParentNode | undefined | null = e.target
+	let element: ParentNode | undefined = event.target
 
 	// Climb ancestors until you see one with an href
 	while (

@@ -71,9 +71,9 @@ export const cachePage = (page: string, show?: boolean, pop?: boolean) => {
 						content: x.response,
 						version: getSiteVersion(),
 						date: Date.now(),
-						last_used: Date.now(),
+						lastUsed: Date.now(),
 						owner: 'Loda'
-					} as PageInfo)
+					} satisfies PageInfo)
 				)
 
 				// Alert the masses! Page has been cached!

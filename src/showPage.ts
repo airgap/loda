@@ -35,9 +35,7 @@ export const showPage = (page: string, pop?: boolean) => {
 				page
 			)
 		// Trigger the loader function once page is written to DOM
-		setTimeout(() => {
-			loader()
-		}, 0)
+		requestAnimationFrame(loader)
 	} else {
 		// If page is not cached, pageCache it
 		cachePage('index.html', true, true)

@@ -8,37 +8,40 @@ import type { PageInfo } from './PageInfo'
  * @description Delete pageCache items until a certain amount of free space is left.
  * @param {number} extra - the amount of space needed in pageCache
  */
-export const cleanCache = (extra: number) => {
-	let cacheSize = getCacheSize()
-	while (cacheSize + extra > 4_000_000 && cacheSize > 0) {
-		cacheSize = 0
-		let earliestDate = Date.now()
-		let earliestId
-		for (let i = 0, length = localStorage.length; i < length; ++i) {
-			const k = localStorage.key(i)
-			if (!k) continue
-			const v = localStorage.getItem(k)
-			if (!v) continue
-			let data: PageInfo
+export const cleanCache = (extraSpaceNeeded: number) => {
+	let currentCacheSize = getCacheSize()
+	while (
+		currentCacheSize + extraSpaceNeeded > 4_000_000 &&
+		currentCacheSize > 0
+	) {
+		currentCacheSize = 0
+		let oldestPageDate = Date.now()
+		let oldestPageId
+		for (let i = 0; i < localStorage.length; ++i) {
+			const key = localStorage.key(i)
+			if (!key) continue
+			const value = localStorage.getItem(key)
+			if (!value) continue
+			let pageInfo: PageInfo
 			try {
-				data = JSON.parse(v) as PageInfo
+				pageInfo = JSON.parse(value) as PageInfo
 			} catch {
 				continue
 			}
 
-			if (data.owner === 'Loda') {
-				cacheSize += data.content.length
-				if (data.last_used < earliestDate) {
-					earliestDate = data.last_used
-					earliestId = k
+			if (pageInfo.owner === 'Loda') {
+				currentCacheSize += pageInfo.content.length
+				if (pageInfo.lastUsed < oldestPageDate) {
+					oldestPageDate = pageInfo.lastUsed
+					oldestPageId = key
 				}
 			}
 		}
 
-		if (earliestId) {
-			localStorage.removeItem(earliestId)
+		if (oldestPageId) {
+			localStorage.removeItem(oldestPageId)
 			dispatchEventOnDocument('pageCache-trimmed', {
-				page: earliestId
+				page: oldestPageId
 			})
 		}
 	}
