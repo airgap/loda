@@ -9,7 +9,7 @@ import { cachePage } from './cachePage'
  */
 export const startHover = (event: { target: Element }) => {
 	// Get the hovered element
-	let element: ParentNode | undefined = event.target
+	let element: ParentNode | null = event.target
 
 	// Climb ancestors until you see one with an href
 	while (

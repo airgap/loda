@@ -8,5 +8,5 @@ import { type PageInfo } from './PageInfo'
  */
 export const storedPageFor = (page: string): PageInfo | undefined => {
 	const data = localStorage.getItem(page)
-	return data ? JSON.parse(data) : undefined
+	return data ? (JSON.parse(data) as PageInfo) : undefined
 }

@@ -1,7 +1,8 @@
 import { state } from './state'
 import { pollServer } from './pollServer'
 import { makeDeferredPageLoadSpooler } from './makeDeferredPageLoadSpooler'
-import { loadPage } from './loadPage'
+import { showPage } from './showPage'
+import { cachePage } from './cachePage'
 
 /**
  * @function clickLink
@@ -49,7 +50,17 @@ export const clickLink = (event: string | MouseEvent) => {
 	const lastPage = state.lastPage
 
 	// Load the new page
-	loadPage(href)
+	// Set the last page variable to the current page
+	state.lastPage = href
+
+	// If the current page is cached
+	if (state.pageCache[href])
+		// Display the page
+		requestAnimationFrame(() => {
+			showPage(href)
+		})
+	// Otherwise, pageCache the page and try again
+	else cachePage(href).then(()=>showPage(href))
 
 	// Poll the server for new RML/DML data
 	// Note: might need to play with the variable a bit to fix a bug

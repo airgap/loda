@@ -12,7 +12,10 @@ import { dispatchEventOnDocument } from './dispatchEventOnDocument'
  * @param {string} currentPageUrl - URL of the current page for which RML data is being retrieved
  * @param {string} targetPageUrl - URL of a different page for which RML data is being requested, if applicable
  */
-export const pollServer = (currentPageUrl: string, targetPageUrl?: string) => {
+export const pollServer = async (
+	currentPageUrl: string,
+	targetPageUrl?: string
+): Promise<void> => {
 	if (!state.mlEndpoint) throw new Error('No server set')
 
 	// Force the required URL to be formatted properly
@@ -33,7 +36,7 @@ export const pollServer = (currentPageUrl: string, targetPageUrl?: string) => {
 	}
 
 	// Send the request using fetch
-	fetch(state.mlEndpoint, {
+	await fetch(state.mlEndpoint, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'

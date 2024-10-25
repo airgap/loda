@@ -14,7 +14,7 @@ export const getCacheSize = (): number => {
 		if (!value) continue
 		let pageInfo: PageInfo
 		try {
-			pageInfo = JSON.parse(value)
+			pageInfo = JSON.parse(value) as PageInfo
 		} catch {
 			continue
 		}

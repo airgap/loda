@@ -1,7 +1,6 @@
 import { state } from './state'
 import { storedPageFor } from './storedPageFor'
 import { getSiteVersion } from './getSiteVersion'
-import { showPage } from './showPage'
 import { getCacheSize } from './getCacheSize'
 import { cleanCache } from './cleanCache'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
@@ -15,15 +14,8 @@ import { type PageInfo } from './PageInfo'
  * @param {boolean} show - whether to show the page
  * @param {boolean} pop - whether to pop states
  */
-export const cachePage = (page: string, show?: boolean, pop?: boolean) => {
+export const cachePage = async (page: string) => {
 	// If we're going to show the page, queue it and alert the masses
-	if (show) {
-		state.queuedPage = page
-		dispatchEventOnDocument('page-queued', {
-			page
-			/* Will eventually include the link that was clicked */
-		})
-	}
 
 	// If the page is already being cached, don't do anything
 	if (state.cachingPages[page]) return
@@ -41,51 +33,39 @@ export const cachePage = (page: string, show?: boolean, pop?: boolean) => {
 		dispatchEventOnDocument('permacache-hit', {
 			page
 		})
-
-		// Show the permacached page
-		if (state.queuedPage) showPage(page, pop)
 	} else {
 		// Page not in permacache, need to fetch it from the web server
+		const response = await fetch(page)
+		const content = await response.text()
 
-		// Prep request
-		const x = new XMLHttpRequest()
-		x.addEventListener('load', () => {
-			// Page gotten. Alert the masses
-			state.pageCache[page] = x.response
-			dispatchEventOnDocument('page-cached', {
-				page,
-				content: x.response
-			})
-
-			// Delete old pageCache items until there's enough room for the new page
-			cleanCache(x.response.length)
-
-			// If permacaching is enabled, store the page in localStorage
-			if (
-				getSiteVersion() > -1 &&
-				getCacheSize() + x.response.length < 4_000_000
-			) {
-				localStorage.setItem(
-					page,
-					JSON.stringify({
-						content: x.response,
-						version: getSiteVersion(),
-						date: Date.now(),
-						lastUsed: Date.now(),
-						owner: 'Loda'
-					} satisfies PageInfo)
-				)
-
-				// Alert the masses! Page has been cached!
-				dispatchEventOnDocument('page-permacached')
-			}
-
-			// Show the page already
-			if (state.queuedPage) showPage(state.queuedPage, pop)
+		// Page gotten. Alert the masses
+		state.pageCache[page] = content
+		dispatchEventOnDocument('page-cached', {
+			page,
+			content
 		})
 
-		// Send the request for the page to the web server
-		x.open('GET', page)
-		x.send()
+		// Delete old pageCache items until there's enough room for the new page
+		cleanCache(content.length)
+
+		// If permacaching is enabled, store the page in localStorage
+		if (
+			getSiteVersion() > -1 &&
+			getCacheSize() + content.length < 4_000_000
+		) {
+			localStorage.setItem(
+				page,
+				JSON.stringify({
+					content,
+					version: getSiteVersion(),
+					date: Date.now(),
+					lastUsed: Date.now(),
+					owner: 'Loda'
+				} satisfies PageInfo)
+			)
+
+			// Alert the masses! Page has been cached!
+			dispatchEventOnDocument('page-permacached')
+		}
 	}
 }
