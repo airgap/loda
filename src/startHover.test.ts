@@ -3,7 +3,7 @@ import { startHover } from './startHover'
 import { state } from './state'
 import { cachePage } from './cachePage'
 
-vi.useFakeTimers();
+vi.useFakeTimers()
 
 // Mock dependencies
 vi.mock('./state', () => ({

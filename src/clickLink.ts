@@ -10,7 +10,7 @@ import { cachePage } from './cachePage'
  * @description Called when a user clicked on a Loda-enabled anchor.
  * @param {MouseEvent|string} event - click event or URL to explicitly follow
  */
-export const clickLink = (event: string | MouseEvent) => {
+export const clickLink = async (event: string | MouseEvent) => {
 	// This will contain the URL to load
 	let href: string | undefined
 
@@ -56,11 +56,19 @@ export const clickLink = (event: string | MouseEvent) => {
 	// If the current page is cached
 	if (state.pageCache[href])
 		// Display the page
-		requestAnimationFrame(async () => showPage(href))
+		await new Promise((resolve) => {
+			requestAnimationFrame(async () => {
+				await showPage(href)
+				resolve(undefined)
+			})
+		})
 	// Otherwise, pageCache the page and try again
-	else void cachePage(href).then(async () => showPage(href))
+	else {
+		await cachePage(href)
+		await showPage(href)
+	}
 
 	// Poll the server for new RML/DML data
 	// Note: might need to play with the variable a bit to fix a bug
-	if (typeof state.lodaId === 'string') void pollServer(href, lastPage)
+	if (typeof state.lodaId === 'string') await pollServer(href, lastPage)
 }
