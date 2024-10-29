@@ -2,6 +2,7 @@
 	"name": "loda.io",
 	"version": "1.0.0",
 	"devDependencies": {
+		"happy-dom": "^15.7.4",
 		"prettier": "^3.2.5",
 		"sass": "^1.77.2",
 		"ts-loader": "^9.5.1",
@@ -14,11 +15,11 @@
 	},
 	"main": "dist/main.js",
 	"scripts": {
-		"lint": "xo --fix \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
-		"test": "xo \"{src/**/*,src/*}.{js,ts,jsx,tsx,json}\"",
+		"lint-fix": "xo --fix \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
+		"lint": "xo \"{src/**/*,src/*}.{js,ts,jsx,tsx,json}\"",
+		"test": "npm run lint && vitest",
 		"dev": "vite --config demo/vite.config.ts",
 		"build": "vite build --config vite.config.ts",
-		"format": "prettier -w .",
 		"preview": "vite preview --config demo/vite.config.ts",
 		"clean": "rm -rf dist node_modules package-lock.json .parcel-cache"
 	},
