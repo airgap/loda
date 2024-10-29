@@ -74,10 +74,9 @@ export const actualLoader = () => {
 				currentHref.slice(0, Math.max(0, sourceHashPos))
 			) {
 				// Just a hash change...probably
-				link.addEventListener(
-					'click',
-					() => (state.changingHash = true)
-				)
+				link.addEventListener('click', () => {
+					state.changingHash = true
+				})
 			} else {
 				// Different page
 
@@ -115,7 +114,7 @@ export const actualLoader = () => {
 		(typeof state.lodaId === 'string' || state.mlEndpoint) &&
 		!state.loadedFor.includes(location.href)
 	) {
-		pollServer(location.href)
+		void pollServer(location.href)
 		state.loadedFor.push(location.href)
 	}
 

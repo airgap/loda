@@ -56,13 +56,11 @@ export const clickLink = (event: string | MouseEvent) => {
 	// If the current page is cached
 	if (state.pageCache[href])
 		// Display the page
-		requestAnimationFrame(() => {
-			showPage(href)
-		})
+		requestAnimationFrame(async () => showPage(href))
 	// Otherwise, pageCache the page and try again
-	else cachePage(href).then(()=>showPage(href))
+	else void cachePage(href).then(async () => showPage(href))
 
 	// Poll the server for new RML/DML data
 	// Note: might need to play with the variable a bit to fix a bug
-	if (typeof state.lodaId === 'string') pollServer(href, lastPage)
+	if (typeof state.lodaId === 'string') void pollServer(href, lastPage)
 }
