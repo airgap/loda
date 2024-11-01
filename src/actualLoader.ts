@@ -77,10 +77,8 @@ export const actualLoader = () => {
 				.replace(/\/$/, '')
 
 			if (currentUrlWithoutHash === targetUrlWithoutHash) {
-				console.log('ANAL3')
 				// Just a hash change - let browser handle it normally
 				link.addEventListener('click', () => {
-					console.log('ANAL4')
 					state.changingHash = true
 				})
 			} else {

@@ -8,7 +8,7 @@ window.addEventListener('load', loader)
 try {
 	window.removeEventListener('popstate', popPage)
 } catch {
-	console.log('popstate rebound')
+	// Nothing to remove, A-OK
 }
 
 window.addEventListener('popstate', popPage)
