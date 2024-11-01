@@ -1,6 +1,6 @@
 import { getCacheSize } from './getCacheSize'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
-import type { PageInfo } from './PageInfo'
+import type { PageInfo } from './types'
 
 /**
  * @function cleanCache

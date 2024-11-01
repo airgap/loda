@@ -48,10 +48,4 @@ export const pollServer = async (
 		.then(({ pages }: { pages: { urls: string[] } }) => {
 			for (const page of pages.urls) void cachePage(page)
 		})
-		.catch((error: Error) => {
-			// Handle network errors
-			dispatchEventOnDocument('api-error', {
-				error: error.message
-			})
-		})
 }

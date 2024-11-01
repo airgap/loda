@@ -4,7 +4,7 @@ import { getSiteVersion } from './getSiteVersion'
 import { getCacheSize } from './getCacheSize'
 import { cleanCache } from './cleanCache'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
-import { type PageInfo } from './PageInfo'
+import { type PageInfo } from './types'
 
 /**
  * @function cachePage

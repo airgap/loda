@@ -1,4 +1,4 @@
-import { type PageInfo } from './PageInfo'
+import { type PageInfo } from './types'
 
 /**
  * @function storedPageFor
