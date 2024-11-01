@@ -69,12 +69,18 @@ export const actualLoader = () => {
 		) {
 			// Ensure the target page is not the active page,
 			//   i.e. links to the same page will just trigger reload per usual
-			if (
-				href.slice(0, Math.max(0, destinationHashPos)) ===
-				currentHref.slice(0, Math.max(0, sourceHashPos))
-			) {
-				// Just a hash change...probably
+			const currentUrlWithoutHash = currentHref
+				.slice(0, Math.max(0, sourceHashPos))
+				.replace(/\/$/, '')
+			const targetUrlWithoutHash = href
+				.slice(0, Math.max(0, destinationHashPos))
+				.replace(/\/$/, '')
+
+			if (currentUrlWithoutHash === targetUrlWithoutHash) {
+				console.log('ANAL3')
+				// Just a hash change - let browser handle it normally
 				link.addEventListener('click', () => {
+					console.log('ANAL4')
 					state.changingHash = true
 				})
 			} else {
