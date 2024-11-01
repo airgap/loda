@@ -1,5 +1,12 @@
 <img src="/res/img/header.svg">
 
+## Quick Install
+Add this to your `<head>` tag:
+```
+<script src="https://cdn.jsdelivr.net/npm/loda.io@latest/dist/index.umd.js"></script>
+```
+Boom. Done.
+
 ## What It Is
 
 An open-source JavaScript library that reduces page load times by up to 90%. Seriously. 90%.
