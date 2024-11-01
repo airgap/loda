@@ -1,0 +1,53 @@
+{
+	"name": "loda.io",
+	"version": "1.0.1",
+	"devDependencies": {
+		"happy-dom": "^15.7.4",
+		"prettier": "^3.2.5",
+		"sass": "^1.77.2",
+		"ts-loader": "^9.5.1",
+		"typescript": "^5.4.5",
+		"vite": "^5.2.11",
+		"vite-plugin-dts": "^3.9.1",
+		"vite-plugin-markdown": "^2.2.0",
+		"vitest": "^1.6.0",
+		"xo": "^0.58.0"
+	},
+	"main": "dist/main.js",
+	"scripts": {
+		"lint-fix": "xo --fix \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
+		"lint": "xo \"{src/**/*,src/*}.{js,ts,jsx,tsx,json}\"",
+		"test": "npm run lint && vitest",
+		"dev": "vite --config demo/vite.config.ts",
+		"build": "vite build --config vite.config.ts",
+		"preview": "vite preview --config demo/vite.config.ts",
+		"clean": "rm -rf dist node_modules package-lock.json .parcel-cache"
+	},
+	"xo": {
+		"prettier": "true",
+		"rules": {
+			"unicorn/filename-case": [
+				"error",
+				{
+					"cases": {
+						"camelCase": true,
+						"pascalCase": true,
+						"kebabCase": false,
+						"snakeCase": false
+					}
+				}
+			],
+			"unicorn/prefer-query-selector": 0,
+			"unicorn/prefer-node-protocol": 0,
+			"import/extensions": 0,
+			"@typescript-eslint/naming-convention": 0
+		},
+		"no-semicolon": true
+	},
+	"eslintConfig": {
+		"extends": [
+			"xo",
+			"xo-typescript"
+		]
+	}
+}
