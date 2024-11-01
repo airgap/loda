@@ -23,7 +23,7 @@ describe('showPage', () => {
 		state.pageCache = {}
 
 		// Mock document methods
-		document.open = vi.fn()
+		document.open = vi.fn() as unknown as typeof document.open
 		document.write = vi.fn()
 		document.close = vi.fn()
 

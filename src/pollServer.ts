@@ -1,6 +1,6 @@
 import { state } from './state'
 import { cachePage } from './cachePage'
-import { dispatchEventOnDocument } from './dispatchEventOnDocument'
+import type { LoadingPageRequest } from './types'
 
 /**
  * @function pollServer

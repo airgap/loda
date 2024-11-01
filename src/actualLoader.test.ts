@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { actualLoader } from './actualLoader'
 import { state } from './state'
-import { startHover } from './startHover'
-import { clickLink } from './clickLink'
 import { pollServer } from './pollServer'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
 

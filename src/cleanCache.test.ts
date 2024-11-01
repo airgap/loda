@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { cleanCache } from './cleanCache'
 import { getCacheSize } from './getCacheSize'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'

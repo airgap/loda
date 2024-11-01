@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { pollServer } from './pollServer'
 import { state } from './state'
 import { cachePage } from './cachePage'
-import { dispatchEventOnDocument } from './dispatchEventOnDocument'
 
 // Mock dependencies
 vi.mock('./state', () => ({
