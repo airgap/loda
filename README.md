@@ -6,7 +6,7 @@ An open-source JavaScript library that reduces page load times by up to 90%. Ser
 
 ## What It Isn't
 
-Bulky and complex. Loda is currently under 3KB gzipped and requires zero setup.
+Bulky and complex. Loda is currently under ~3KB~ 2KB gzipped and requires zero setup.
 
 # Features
 
