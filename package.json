@@ -1,6 +1,6 @@
 {
 	"name": "loda.io",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"devDependencies": {
 		"happy-dom": "^15.7.4",
 		"prettier": "^3.2.5",
@@ -13,7 +13,7 @@
 		"vitest": "^1.6.0",
 		"xo": "^0.58.0"
 	},
-	"main": "dist/main.js",
+	"main": "dist/index.umd.js",
 	"scripts": {
 		"lint-fix": "xo --fix \"{src/**/*,*}.{js,ts,jsx,tsx,json}\"",
 		"lint": "xo \"{src/**/*,src/*}.{js,ts,jsx,tsx,json}\"",

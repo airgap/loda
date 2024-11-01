@@ -13,6 +13,26 @@ export default defineConfig({
 			output: {
 				globals: {}
 			}
+		},
+		minify: 'terser',
+		terserOptions: {
+			compress: {
+				drop_console: true,
+				drop_debugger: true,
+				pure_funcs: [
+					'console.log',
+					'console.info',
+					'console.debug',
+					'console.trace'
+				],
+				passes: 2
+			},
+			mangle: {
+				properties: true
+			},
+			format: {
+				comments: false
+			}
 		}
 	},
 	plugins: [dts()],
