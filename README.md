@@ -48,7 +48,12 @@ We're proud to say Loda is probably the craziest JavaScript library ever invente
 npm run lint
 ```
 
-### Test
+### Fix lint issues
+```
+npm run lint-fix
+```
+
+### Test (lint + unit tests)
 
 ```
 npm run test
