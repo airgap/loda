@@ -1,4 +1,4 @@
-<img src="https://github.com/airgap/loda/blob/master/res/img/header.svg">
+<img src="/res/img/header.svg">
 
 ## What It Is
 
