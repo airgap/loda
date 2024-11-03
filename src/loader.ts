@@ -1,5 +1,6 @@
 import { state } from './state'
 import { dispatchEventOnDocument } from './dispatchEventOnDocument'
+import { actualLoader } from './actualLoader'
 
 /**
  * @function loader
@@ -23,8 +24,5 @@ export const loader = () => {
 		clearTimeout(state.binderTimeout)
 	}
 
-	state.binderTimeout = setTimeout(
-		() => dispatchEventOnDocument('boost-links'),
-		10
-	)
+	state.binderTimeout = setTimeout(actualLoader, 10)
 }

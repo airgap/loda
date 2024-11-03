@@ -11,6 +11,7 @@ import { dispatchEventOnDocument } from './dispatchEventOnDocument'
  * @description Initialize Loda.
  */
 export const actualLoader = () => {
+	console.log('actualLoader')
 	// Manually trigger load events
 	if (state.loaded) {
 		dispatchEventOnDocument('page-loaded')
