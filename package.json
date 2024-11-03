@@ -1,6 +1,6 @@
 {
 	"name": "loda.io",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"devDependencies": {
 		"happy-dom": "^15.7.4",
 		"prettier": "^3.2.5",
