@@ -1,12 +1,19 @@
 <img src="/res/img/header.svg">
 
+## Quick Install
+Add this to your `<head>` tag:
+```
+<script src="https://cdn.jsdelivr.net/npm/loda.io@latest/dist/index.umd.js"></script>
+```
+Boom. Done.
+
 ## What It Is
 
 An open-source JavaScript library that reduces page load times by up to 90%. Seriously. 90%.
 
 ## What It Isn't
 
-Bulky and complex. Loda is currently under 3KB gzipped and requires zero setup.
+Bulky and complex. Loda is currently under ~3KB~ 2KB gzipped and requires zero setup.
 
 # Features
 
@@ -48,7 +55,12 @@ We're proud to say Loda is probably the craziest JavaScript library ever invente
 npm run lint
 ```
 
-### Test
+### Fix lint issues
+```
+npm run lint-fix
+```
+
+### Test (lint + unit tests)
 
 ```
 npm run test

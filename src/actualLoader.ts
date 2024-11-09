@@ -11,6 +11,7 @@ import { dispatchEventOnDocument } from './dispatchEventOnDocument'
  * @description Initialize Loda.
  */
 export const actualLoader = () => {
+	console.log('actualLoader')
 	// Manually trigger load events
 	if (state.loaded) {
 		dispatchEventOnDocument('page-loaded')
@@ -77,10 +78,8 @@ export const actualLoader = () => {
 				.replace(/\/$/, '')
 
 			if (currentUrlWithoutHash === targetUrlWithoutHash) {
-				console.log('ANAL3')
 				// Just a hash change - let browser handle it normally
 				link.addEventListener('click', () => {
-					console.log('ANAL4')
 					state.changingHash = true
 				})
 			} else {

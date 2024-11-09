@@ -22,7 +22,6 @@ export const showPage = async (page: string, pop?: boolean) => {
 	window.document.open()
 	window.document.write(html)
 	window.document.close()
-	console.log('OPENED WROTE CLOSED', html)
 
 	// Pop state if necessary
 	if (!pop)
