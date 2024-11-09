@@ -2,7 +2,7 @@
 	"name": "loda.io",
 	"version": "1.0.4",
 	"devDependencies": {
-		"happy-dom": "^15.7.4",
+		"happy-dom": "^15.10.2",
 		"prettier": "^3.2.5",
 		"sass": "^1.77.2",
 		"ts-loader": "^9.5.1",
